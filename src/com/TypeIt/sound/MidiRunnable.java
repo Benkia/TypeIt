@@ -9,7 +9,7 @@ import java.util.TimerTask;
 public class MidiRunnable implements Runnable {
     private static final int OCTAVES_FROM_START = -1;
     private static final MelodyPlayer melodyPlayer = new MelodyPlayer(0);
-    private int[] notes;
+    private Integer[] notes;
     private long[] durations;
     private boolean isRunning;
     private int currentNoteIndex = 0;
@@ -17,7 +17,7 @@ public class MidiRunnable implements Runnable {
 
     private static Timer timer;
 
-    public MidiRunnable(int[] notes, long[] durations) {
+    public MidiRunnable(Integer[] notes, long[] durations) {
         this.notes = notes;
         this.durations = durations;
         isRunning = false;

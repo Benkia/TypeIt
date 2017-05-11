@@ -1,0 +1,14 @@
+                    D, D, E, D, D, l(B), l(B), l(A),
+                    D, D, E, D, D, l(B), l(B), l(A),
+                    D, D, E, D, D, E,
+                    D, D, E, D, D, l(B), l(B), l(A),
+
+                    D, D, D, E, Fs,
+                    E, E, A, G, Fs, E, D,
+                    D, E, Fs,
+                    E, E, Fs, E, D,
+
+                    A, G, Fs, E,
+                    A, G, Fs, D,
+                    A, G, Fs, E,
+                    E, D

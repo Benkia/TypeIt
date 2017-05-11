@@ -33,7 +33,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected Stage stage;
     protected String lyrics;
     protected String[] syllables;
-    protected int[] notes;
+    protected Integer[] notes;
 
     protected boolean[] userTypedCorrect;
 

@@ -1,0 +1,9 @@
+                    D, D,
+                    C, C,
+                    Ds, D, C, As, C, As, D, C, As,
+
+                    D, D,
+                    C, C,
+                    D, Ds, Ds, Ds, D, C, As, C, As, C, D, C, As,
+
+                    D, C, As, G, F

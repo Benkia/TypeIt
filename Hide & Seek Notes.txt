@@ -1,0 +1,11 @@
+                    A, E, Gs, Gs, Fs, A, B,
+                    A, E, Gs, A, Gs, A, Gs, Fs,
+                    h(E), h(E), h(B), h(Gs), h(E), h(Cs),
+                    h(A), h(Fs), h(E), h(D), h(Cs), h(D), h(Cs), A,
+                    B, h(E), Gs, h(Cs),
+
+                    A, E, A, B, A, Gs, A, Fs, A, A,
+                    E, B, A, Gs, A, B, A,
+                    h(E), h(E), h(B), h(Gs), h(E), h(Cs), h(A),
+                    h(Fs), h(E), h(D), h(D), h(Cs), A,
+                    B, h(Fs), Gs, h(Cs)

@@ -41,6 +41,8 @@ public class ChooseSongController extends AnchorPane implements Initializable {
     private static final int LYRICS_WINDOW_WIDTH = 1500;
     private static final int LYRICS_WINDOW_HEIGHT = 700;
 
+    private static final Boolean PITCH_BEND_DEFAULT = false;
+
     private final ListView<SongUserData> list = new ListView<>();
     private final ObservableList<SongUserData> data;
     private final Label label = new Label();
@@ -67,7 +69,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
         select.setDisable(true);
 
         CheckBox bendPitchCheckBox = new CheckBox("Pitch Bend");
-        bendPitchCheckBox.setSelected(true);
+        bendPitchCheckBox.setSelected(PITCH_BEND_DEFAULT);
 
         stage.setScene(scene);
         stage.setTitle("Choose a song");

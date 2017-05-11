@@ -1,0 +1,8 @@
+                    Cs, D, D, D, D, D, D, E, E, Cs,
+                    Cs, D, D, Cs, D, D, Cs, E,
+
+                    C, C, B, C, B, C, B, C, D, D,
+                    D, D, D, D, D, D, D, D, C, C, l(B), l(G),
+                    B, C, B, C, D, D,
+
+                    E,D,D, D, E, D, B, A, A, A
