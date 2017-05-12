@@ -211,7 +211,8 @@ public class LyricsViewController extends AbstractLyricsViewController {
             }
 
             // Append the current syllable
-            appendToPane(syllables[currentSyllableIndex].substring(currentCharIndex), "blue", true);
+            String currentSyllable = lyrics.substring(totalIndex, totalIndex + syllables[currentSyllableIndex].length() - currentCharIndex);
+            appendToPane(currentSyllable/*.substring(currentCharIndex)*/, "blue", true);
 
             // Append the rest of the lyrics, which the user hasn't touched yet.
             String restOfLyrics = lyrics.substring(totalIndex+(syllables[currentSyllableIndex].length()-currentCharIndex));

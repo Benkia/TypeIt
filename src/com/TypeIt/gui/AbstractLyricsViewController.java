@@ -4,6 +4,9 @@ import com.TypeIt.gui.language.KeyCodeMap;
 import com.TypeIt.gui.language.Language;
 import com.TypeIt.songs.lyrics.LyricsConfiguration;
 import com.TypeIt.main.Constants;
+import com.TypeIt.songs.lyrics.blank.BlankAlgorithmImpl;
+import com.TypeIt.songs.lyrics.blank.BlankAlgorithmSolution;
+import com.TypeIt.songs.lyrics.density.DensityAlgorithmImpl;
 import com.TypeIt.songs.melody.Melody;
 import com.TypeIt.sound.BGPlayer;
 import com.TypeIt.sound.BackgroundTrackPlayer;
@@ -16,11 +19,14 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public abstract class AbstractLyricsViewController implements ILyricsViewController {
     protected static final float MIN_SPEED = 0.5f;
     protected static final float MAX_SPEED = 1f;
     protected static final float SPEED_TO_CHANGE_EVERY_KEY = 0.01f;
     protected boolean bendPitch;
+    protected boolean challengeMode;
     protected Rectangle2D screenBounds;
 
     @FXML
@@ -73,10 +79,29 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
     protected abstract void manageSizes();
 
-    public void setRawText(String rawText){
-        LyricsConfiguration config = new LyricsConfiguration(rawText);
+    public void setRawText(String rawText) {
+        // Configure lyrics
+        final LyricsConfiguration config = new LyricsConfiguration(rawText);
 
-        this.lyrics = config.getLyricsText();
+        // Get the lyrics string from the config
+        String lyricsString = config.getLyricsText();
+
+        // Run Density algorithm and split the string into a list of words
+        List<String> words = new DensityAlgorithmImpl().chooseWords(lyricsString);
+        List<String> finalWords = words;
+
+        if (this.challengeMode) {
+            // Run the Blank algorithm and make some characters blank
+            BlankAlgorithmSolution solution = new BlankAlgorithmImpl().run(words, lyricsString);
+
+            // TODO: Need to use this
+            finalWords = solution.getWords();
+            this.lyrics = solution.getLyricsString();
+        }
+        else {
+            this.lyrics = lyricsString;
+        }
+
         this.syllables = config.getSyllables();
         this.notes = new Melody().getNotes();
 
@@ -88,6 +113,10 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
     public void setBendPitch(boolean bendPitch) {
         this.bendPitch = bendPitch;
+    }
+
+    public void setChallengeMode(boolean challengeMode) {
+        this.challengeMode = challengeMode;
     }
 
     protected void incrementCharacter(boolean userSuccess) {
@@ -132,6 +161,11 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         String currentSyllable = syllables[currentSyllableIndex];
         char currentCharToType = currentSyllable.charAt(currentCharIndex);
 
+        if (challengeMode) {
+            // Un-blank the current char
+            unblank(currentCharToType);
+        }
+
         // Get the english equivalent of the char to type
         currentCharToType = KeyCodeMap.getInstance().getEnglishCharacterFromHebrew(currentCharToType);
         typedChar = KeyCodeMap.getInstance().getEnglishCharacterFromHebrew(typedChar);
@@ -142,6 +176,14 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         // Check if the typed keys match - This is essentially like changing languages
         return typedChar == currentCharToType;
+    }
+
+    private void unblank(char currentCharToType) {
+        // If the character is a blank one
+        if (lyrics.charAt(totalIndex) == BlankAlgorithmImpl.BLANK_CHAR) {
+            // Un-blank the character
+            lyrics = lyrics.substring(0, totalIndex) + currentCharToType + lyrics.substring(totalIndex+1);
+        }
     }
 
     @Override

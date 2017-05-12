@@ -68,7 +68,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
         CustomButton select = new CustomButton("Continue");
         select.setDisable(true);
 
-        CheckBox bendPitchCheckBox = new CheckBox("Pitch Bend");
+        CheckBox bendPitchCheckBox = new CheckBox("Challenge Mode");
         bendPitchCheckBox.setSelected(PITCH_BEND_DEFAULT);
 
         stage.setScene(scene);
@@ -100,7 +100,6 @@ public class ChooseSongController extends AnchorPane implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 BackgroundTrackPlayer.stopEverything();
-                new Thread(new PlayPressedButtonRunnable()).start();
 
                 Constants.fileName = label.getText();
 
@@ -129,12 +128,13 @@ public class ChooseSongController extends AnchorPane implements Initializable {
 
                 stage.setTitle("TypeIt");
                 stage.setScene(new Scene(root, LYRICS_WINDOW_WIDTH, LYRICS_WINDOW_HEIGHT));
-                stage.show();
-                loader.<LyricsViewController>getController().setStage(stage);
+
+                boolean challengeMode = bendPitchCheckBox.isSelected();
+                loader.<LyricsViewController>getController().setChallengeMode(challengeMode);
                 loader.<LyricsViewController>getController().setRawText(rawText);
 
-                boolean bendPitch = bendPitchCheckBox.isSelected();
-                loader.<LyricsViewController>getController().setBendPitch(bendPitch);
+                stage.show();
+                loader.<LyricsViewController>getController().setStage(stage);
             }
         });
 
