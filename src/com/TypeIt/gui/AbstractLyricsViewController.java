@@ -7,6 +7,7 @@ import com.TypeIt.main.Constants;
 import com.TypeIt.songs.lyrics.blank.BlankAlgorithmImpl;
 import com.TypeIt.songs.lyrics.blank.BlankAlgorithmSolution;
 import com.TypeIt.songs.lyrics.density.DensityAlgorithmImpl;
+import com.TypeIt.songs.lyrics.density.DensityAlgorithmSolution;
 import com.TypeIt.songs.melody.Melody;
 import com.TypeIt.sound.BGPlayer;
 import com.TypeIt.sound.BackgroundTrackPlayer;
@@ -20,6 +21,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.util.List;
+
+import static java.lang.Character.isWhitespace;
 
 public abstract class AbstractLyricsViewController implements ILyricsViewController {
     protected static final float MIN_SPEED = 0.5f;
@@ -40,6 +43,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected String lyrics;
     protected String[] syllables;
     protected Integer[] notes;
+    protected Boolean[] chosenIndexes;
 
     protected boolean[] userTypedCorrect;
 
@@ -83,23 +87,20 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         // Configure lyrics
         final LyricsConfiguration config = new LyricsConfiguration(rawText);
 
-        // Get the lyrics string from the config
-        String lyricsString = config.getLyricsText();
-
         // Run Density algorithm and split the string into a list of words
-        List<String> words = new DensityAlgorithmImpl().chooseWords(lyricsString);
-        List<String> finalWords = words;
+        DensityAlgorithmSolution filter = new DensityAlgorithmImpl().filter(config.getLyricsText());
+
+        // TODO: This is just the lyrics again, isn't it? (config.getLyricsText())
+        String filteredLyricsString = filter.getChosenLyricsString();
+        chosenIndexes = filter.getChosenIndexes();
 
         if (this.challengeMode) {
             // Run the Blank algorithm and make some characters blank
-            BlankAlgorithmSolution solution = new BlankAlgorithmImpl().run(words, lyricsString);
-
-            // TODO: Need to use this
-            finalWords = solution.getWords();
+            BlankAlgorithmSolution solution = new BlankAlgorithmImpl().run(filteredLyricsString, chosenIndexes);
             this.lyrics = solution.getLyricsString();
         }
         else {
-            this.lyrics = lyricsString;
+            this.lyrics = filteredLyricsString;
         }
 
         this.syllables = config.getSyllables();
@@ -109,6 +110,8 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         lang = config.getLanguage();
         setKeyboardLanguage(lang);
+
+        jumpToNextChosenSyllable();
     }
 
     public void setBendPitch(boolean bendPitch) {
@@ -125,9 +128,8 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         char currentChar = lyrics.charAt(totalIndex);
 
         // Skip white-spaces
-        while (isWhiteSpace(currentChar)) {
+        while (isWhitespace(currentChar)) {
             totalIndex++;
-
             currentChar = lyrics.charAt(totalIndex);
         }
 
@@ -144,10 +146,15 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
             // Syllable is completed
             incrementSyllable();
         }
+
+        jumpToNextChosenSyllable();
     }
 
-    protected boolean isWhiteSpace(char currentChar) {
-        return (currentChar == ' ' || currentChar == '\n' || currentChar == '\r');
+    private void jumpToNextChosenSyllable() {
+        // Keep incrementing characters until we reach the next chosen index
+        while (totalIndex < lyrics.length() && !chosenIndexes[totalIndex]) {
+            incrementCharacter(false);
+        }
     }
 
     protected void incrementSyllable() {

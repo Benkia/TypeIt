@@ -2,6 +2,8 @@ package com.TypeIt.songs.lyrics.blank;
 
 import java.util.*;
 
+import static java.lang.Character.isWhitespace;
+
 /**
  * Created by admin on 12/05/2017.
  */
@@ -21,53 +23,48 @@ public class BlankAlgorithmImpl implements BlankAlgorithm {
     private final Random random = new Random();
 
     @Override
-    public BlankAlgorithmSolution run(List<String> lyricsWords, String lyricsString) {
+    public BlankAlgorithmSolution run(String lyricsString, Boolean[] chosenIndexes) {
         StringBuilder sb = new StringBuilder(lyricsString);
 
-        int overallStringIndex = 0;
-        int wordIndex = 0;
+        int lastWhiteSpaceIndex = -1;
 
         // Iterate over all the given words
-        for (String current : lyricsWords) {
-            // Iterate over all the expressions we want to make blank
-            for (String expression : blankExpressions.keySet()) {
-                // TODO: THINK OF A BETTER WAY
-                if (random.nextBoolean()) {
-                    // Get the index of the current expression in the current word
-                    int index = current.indexOf(expression);
+        for (int charIndex=0; charIndex<lyricsString.length(); charIndex++) {
+                char currentChar = lyricsString.charAt(charIndex);
 
-                    // If the expression exists
-                    if (index != -1) {
-                        StringBuilder blanks = new StringBuilder();
+                if (isWhitespace(currentChar)) {
+                    // Get the current word by splitting from the last white space to this one
+                    String currentWord = lyricsString.substring(lastWhiteSpaceIndex + 1, charIndex);
+                    lastWhiteSpaceIndex = charIndex;
 
-                        // Change every character in the expression to blank
-                        for (int i=0; i<expression.length(); i++) {
-                            // Change the lyrics string as well
-                            sb.setCharAt(overallStringIndex+index+i, blankExpressions.get(expression).charAt(i));
-                            blanks.append(BLANK);
+                    // Iterate over all the expressions we want to make blank
+                    for (String expression : blankExpressions.keySet()) {
+                        // TODO: THINK OF A BETTER WAY
+                        if (random.nextBoolean()) {
+                            // Get the index of the current expression in the current word
+                            int expressionIndex = currentWord.indexOf(expression);
+
+                            // If the expression exists
+                            if (expressionIndex != -1) {
+                                // Change every character in the expression to blank
+                                for (int i = 0; i < expression.length(); i++) {
+                                    int indexToBlank = charIndex - currentWord.length() + expressionIndex + i;
+
+                                    // Perform the blank only for indexes that were chosen in the Density algorithm
+                                    if (chosenIndexes[indexToBlank]) {
+                                        // Change the lyrics string as well
+                                        // The index we're in now (at the whitespace) - the word's length (to get to the start of the word) + the index where the expression starts + the current character
+                                        sb.setCharAt(indexToBlank, blankExpressions.get(expression).charAt(i));
+                                    }
+                                }
+                            }
                         }
-
-                        // Change the word
-                        current = current.replace(expression, blanks.toString());
-                        lyricsWords.set(wordIndex, current);
                     }
+
                 }
-            }
-
-            // Jump to the next word
-            overallStringIndex += current.length();
-
-            // Increment over the whitespaces
-            while (overallStringIndex != lyricsString.length() &&
-                    (lyricsString.charAt(overallStringIndex) == ' ' ||
-                   lyricsString.charAt(overallStringIndex) == '\n')) {
-                overallStringIndex++;
-            }
-
-            wordIndex++;
         }
 
-        return new BlankAlgorithmSolution(lyricsWords, sb.toString());
+        return new BlankAlgorithmSolution(sb.toString());
     }
 
     private Map<String, String> getExpressionsToBlank() {

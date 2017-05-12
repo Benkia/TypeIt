@@ -29,6 +29,7 @@ import javafx.stage.Screen;
 
 import java.io.IOException;
 
+import static java.lang.Character.isWhitespace;
 import static javafx.stage.Screen.getPrimary;
 
 /**
@@ -198,11 +199,15 @@ public class LyricsViewController extends AbstractLyricsViewController {
                 String currentChar = lyrics.substring(i, i+1);
 
                 if (!currentChar.equals(" ") && !currentChar.equals("\n")) {
-                    if (userTypedCorrect[i]) {
-                        appendToPane(currentChar, "green", false);
+                    if (chosenIndexes[i]) {
+                        if (userTypedCorrect[i]) {
+                            appendToPane(currentChar, "green", false);
+                        } else {
+                            appendToPane(currentChar, "red", false);
+                        }
                     }
                     else {
-                        appendToPane(currentChar, "red", false);
+                        appendToPane(currentChar, "gray", false);
                     }
                 }
                 else {
@@ -210,13 +215,26 @@ public class LyricsViewController extends AbstractLyricsViewController {
                 }
             }
 
+            int resOfLyricsIndex = totalIndex + syllables[currentSyllableIndex].length() - currentCharIndex;
+
             // Append the current syllable
-            String currentSyllable = lyrics.substring(totalIndex, totalIndex + syllables[currentSyllableIndex].length() - currentCharIndex);
+            String currentSyllable = lyrics.substring(totalIndex, resOfLyricsIndex);
             appendToPane(currentSyllable/*.substring(currentCharIndex)*/, "blue", true);
 
             // Append the rest of the lyrics, which the user hasn't touched yet.
-            String restOfLyrics = lyrics.substring(totalIndex+(syllables[currentSyllableIndex].length()-currentCharIndex));
-            appendToPane(restOfLyrics, "black", false);
+            String restOfLyrics = lyrics.substring(resOfLyricsIndex);
+
+            // Ite
+            for (int i=0; i<restOfLyrics.length(); i++) {
+                String currentChar = restOfLyrics.substring(i, i+1);
+
+                if (chosenIndexes[resOfLyricsIndex + i]) {
+                    appendToPane(currentChar, "black", false);
+                }
+                else {
+                    appendToPane(currentChar, "gray", false);
+                }
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -302,7 +320,9 @@ public class LyricsViewController extends AbstractLyricsViewController {
         for (int i=0; i<userTypedCorrect.length; i++) {
             boolean b = userTypedCorrect[i];
 
-            if (!isWhiteSpace(lyrics.charAt(i))) {
+            if (!isWhitespace(lyrics.charAt(i)) &&
+                    // Treat an un-chosen character as a whitespace: Don't count it
+                chosenIndexes[i]) {
                 if (b) {
                     successes++;
                 }
