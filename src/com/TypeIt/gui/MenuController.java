@@ -49,7 +49,7 @@ public class MenuController extends AnchorPane implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         assert play != null : "fx:id=\"play\" was not injected: check your FXML file 'MenuView.fxml'.";
 
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:background.jpg"),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/background.jpg"),
                                                               BackgroundRepeat.REPEAT,
                                                               BackgroundRepeat.NO_REPEAT,
                                                               BackgroundPosition.DEFAULT,
@@ -57,7 +57,7 @@ public class MenuController extends AnchorPane implements Initializable {
 
         box.setBackground(new Background(backgroundImage));
 
-        logo.setImage(new Image("file:typeit.png"));
+        logo.setImage(new Image("file:assets/images/typeit.png"));
 
         box.setAlignment(Pos.TOP_CENTER);
         play.setTextAlignment(TextAlignment.CENTER);

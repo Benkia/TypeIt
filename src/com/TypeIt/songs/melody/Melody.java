@@ -1,8 +1,11 @@
 package com.TypeIt.songs.melody;
 
 import com.TypeIt.files.MelodyFileReader;
+import com.TypeIt.main.Constants;
 import com.TypeIt.songs.Song;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.*;
 
 /**
@@ -24,37 +27,61 @@ public class Melody {
     private static Integer[] notes;
     private static Map<String, Song> songs = new HashMap<>();
 
-    public static void init() {
-        melodies.put(new Song("Ha Tikva", "Naftali Herz Imber"), null);
-        distancesFromOriginal.put("Ha Tikva", 0);
+    private static String[] listSubDirectoriesOfDirectory(String mainDir){
+        File file = new File(mainDir);
+        String[] directories = file.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File current, String name) {
+                return new File(current, name).isDirectory();
+            }
+        });
 
-        melodies.put(new Song("The Scientist", "Coldplay"), null);
-        distancesFromOriginal.put("The Scientist", 0);
-
-        melodies.put(new Song("Hide & Seek", "Imogen Heap"), null);
-        distancesFromOriginal.put("Hide & Seek", 0);
-
-        melodies.put(new Song("With Or Without You", "U2"), null);
-        distancesFromOriginal.put("With Or Without You", 0);
-
-        melodies.put(new Song("One Love", "Bob Marley"), null);
-        distancesFromOriginal.put("One Love", 0);
-
-        melodies.put(new Song("Could You Be Loved", "Bob Marley"), null);
-        distancesFromOriginal.put("Could You Be Loved", 0);
-
-        melodies.put(new Song("Comfortably Numb", "Pink Floyd"), null);
-        distancesFromOriginal.put("Comfortably Numb", 0);
-
-        melodies.put(new Song("No Surprises", "Radiohead"), null);
-        distancesFromOriginal.put("No Surprises", 0);
+        return directories;
     }
 
-    public static void chooseSong(String songName) {
+    public static void init() {
+
+        String[] performers = listSubDirectoriesOfDirectory(Constants.SONGS_MAIN_DIR);
+
+        for (String currPerformer : performers){
+            String[] performerSongs = listSubDirectoriesOfDirectory(Constants.SONGS_MAIN_DIR + "/" + currPerformer);
+
+            for (String currSong : performerSongs){
+                melodies.put(new Song(currSong, currPerformer), null);
+                distancesFromOriginal.put(currSong, 0);
+            }
+        }
+
+//        melodies.put(new Song("Ha Tikva", "Naftali Herz Imber"), null);
+//        distancesFromOriginal.put("Ha Tikva", 0);
+//
+//        melodies.put(new Song("The Scientist", "Coldplay"), null);
+//        distancesFromOriginal.put("The Scientist", 0);
+//
+//        melodies.put(new Song("Hide & Seek", "Imogen Heap"), null);
+//        distancesFromOriginal.put("Hide & Seek", 0);
+//
+//        melodies.put(new Song("With Or Without You", "U2"), null);
+//        distancesFromOriginal.put("With Or Without You", 0);
+//
+//        melodies.put(new Song("One Love", "Bob Marley"), null);
+//        distancesFromOriginal.put("One Love", 0);
+//
+//        melodies.put(new Song("Could You Be Loved", "Bob Marley"), null);
+//        distancesFromOriginal.put("Could You Be Loved", 0);
+//
+//        melodies.put(new Song("Comfortably Numb", "Pink Floyd"), null);
+//        distancesFromOriginal.put("Comfortably Numb", 0);
+//
+//        melodies.put(new Song("No Surprises", "Radiohead"), null);
+//        distancesFromOriginal.put("No Surprises", 0);
+    }
+
+    public static void chooseSong(String songName, String songBand) {
         Song chosenSong = null;
 
         for (Song song : melodies.keySet()) {
-            if (songName.equals(song.getSongName())) {
+            if (songName.equals(Constants.SONGS_MAIN_DIR + "/" + songBand + "/" + song.getSongName() + "/" + song.getSongName())) {
                 chosenSong = song;
                 break;
             }
@@ -64,10 +91,11 @@ public class Melody {
 
         // If we haven't read it from the file yet
         if (notes == null) {
-            notes = fileReader.readMelody(songName);
+            //notes = fileReader.readMelody(Constants.SONGS_MAIN_DIR + "/" + chosenSong.getBandName() + "/" + songName + "/" + songName);
+            notes = fileReader.readMelody(Constants.SONGS_MAIN_DIR + "/" + chosenSong.getBandName() + "/" + chosenSong.getSongName() + "/" + chosenSong.getSongName());
         }
 
-        final int distanceFromOriginal = distancesFromOriginal.get(songName);
+        final int distanceFromOriginal = distancesFromOriginal.get(chosenSong.getSongName());
 
         for (int i = 0; i < notes.length; i++) {
             notes[i] += distanceFromOriginal;
@@ -91,7 +119,7 @@ public class Melody {
         for (Song song : getListOfAllSongs()) {
             String songName = song.getSongName();
 
-            if (songName.equals(fileName)) {
+            if (fileName.indexOf(songName) != -1) {
                 String bandName = song.getBandName();
 
                 if (bandName != null && bandName != "") {

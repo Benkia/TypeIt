@@ -46,6 +46,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
     private final ListView<SongUserData> list = new ListView<>();
     private final ObservableList<SongUserData> data;
     private final Label label = new Label();
+    private String selectedSongBand;
 
     private final UserDataManager userDataManager;
 
@@ -90,9 +91,10 @@ public class ChooseSongController extends AnchorPane implements Initializable {
                     public void changed(ObservableValue<? extends SongUserData> ov,
                                         SongUserData old_val, SongUserData new_val) {
                         label.setText(new_val.getSongName());
+                        selectedSongBand = new_val.getBandName();
                         select.setDisable(false);
 
-                        BackgroundTrackPlayer.preview(new_val.getFileName());
+                        BackgroundTrackPlayer.preview(Constants.SONGS_MAIN_DIR + "/" + selectedSongBand + "/" + new_val.getSongName() + "/" + new_val.getSongName());
                     }
                 });
 
@@ -101,10 +103,10 @@ public class ChooseSongController extends AnchorPane implements Initializable {
             public void handle(ActionEvent event) {
                 BackgroundTrackPlayer.stopEverything();
 
-                Constants.fileName = label.getText();
+                Constants.fileName = Constants.SONGS_MAIN_DIR + "/" + selectedSongBand + "/" + label.getText() + "/" + label.getText();
 
                 // Choose the song
-                Melody.chooseSong(Constants.fileName);
+                Melody.chooseSong(Constants.fileName, selectedSongBand);
                 System.out.println("Playing song: " + Constants.fileName);
 
                 // Continue to LyricsViewController
@@ -147,7 +149,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
         stage.show();
         stage.centerOnScreen();
 
-        Image cursor = new Image("file:cursor.png");
+        Image cursor = new Image("file:assets/images/cursor.png");
         stage.getScene().setCursor(new ImageCursor(cursor));
     }
 

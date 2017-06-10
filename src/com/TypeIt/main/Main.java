@@ -33,7 +33,7 @@ public class Main extends Application {
         Scene scene = new Scene(root, MENU_WIDTH, MENU_HEIGHT);
         stage.setScene(scene);
 
-        Image cursor = new Image("file:cursor.png");
+        Image cursor = new Image("file:assets/images/cursor.png");
         scene.setCursor(new ImageCursor(cursor));
 
         stage.show();

@@ -101,7 +101,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
 
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:lyrics_background.png"),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/lyrics_background.png"),
                 BackgroundRepeat.REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
@@ -120,9 +120,9 @@ public class LyricsViewController extends AbstractLyricsViewController {
         slider.setOnMouseDragged(mouseEvent -> setSpeed((float) slider.getValue()));
         slider.valueProperty().addListener((observable, oldValue, newValue) -> setSpeed((float) slider.getValue()));
 
-        if (Constants.fileName.equals("Ha Tikva")) {
-            slider.setMax(MAX_SPEED*2);
-        }
+//        if (Constants.fileName.equals("Ha Tikva")) {
+//            slider.setMax(MAX_SPEED*2);
+//        }
     }
 
     @Override

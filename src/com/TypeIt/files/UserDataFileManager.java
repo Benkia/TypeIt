@@ -32,7 +32,7 @@ public class UserDataFileManager {
             String line;
 
             // Create the file reader
-            fileReader = new BufferedReader(new FileReader(USER_DATA_FILE_PATH));
+            fileReader = new BufferedReader(new FileReader("assets/user_data/" + USER_DATA_FILE_PATH));
 
             // Read the CSV file header to skip it
             fileReader.readLine();

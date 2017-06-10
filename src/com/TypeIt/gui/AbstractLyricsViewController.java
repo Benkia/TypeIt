@@ -58,9 +58,9 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         Melody melody = new Melody();
         this.notes = melody.getNotes();
 
-        if (Constants.fileName.equals("Ha Tikva")) {
-            bgPlayer = new MidiBackgroundTrackPlayer(Constants.fileName, melody);
-        }
+//        if (Constants.fileName.equals("Ha Tikva")) {
+//            bgPlayer = new MidiBackgroundTrackPlayer(Constants.fileName, melody);
+//        }
     }
 
     public void setStage(Stage primaryStage) {
@@ -69,7 +69,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         stage.setFullScreen(true);
 
-        Image cursor = new Image("file:cursor.png");
+        Image cursor = new Image("file:assets/images/cursor.png");
         stage.getScene().setCursor(new ImageCursor(cursor));
 
         stage.setOnCloseRequest(windowEvent -> {
@@ -87,8 +87,11 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         // Configure lyrics
         final LyricsConfiguration config = new LyricsConfiguration(rawText);
 
+        config.getSyllables();
+
         // Run Density algorithm and split the string into a list of words
-        DensityAlgorithmSolution filter = new DensityAlgorithmImpl().filter(config.getLyricsText());
+        //DensityAlgorithmSolution filter = new DensityAlgorithmImpl().filter(config.getLyricsText());
+        DensityAlgorithmSolution filter = new DensityAlgorithmImpl().filter(rawText, config.getLyricsText());
 
         // TODO: This is just the lyrics again, isn't it? (config.getLyricsText())
         String filteredLyricsString = filter.getChosenLyricsString();
