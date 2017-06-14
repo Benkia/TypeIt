@@ -1,0 +1,16 @@
+                    // This is ...
+                    Gs, Gs, Gs, Gs, Gs, A, B,
+                    Gs, Gs, Gs, Gs, A, Gs,
+
+                    A, Gs, Fs, E, Ds, Ds, E, Fs,
+                    A, Gs, Fs, E, Ds, Ds, E, Fs,
+                    A, Gs, Fs, E, A, A, Ds, E, Fs, E,
+
+
+                    // Such a pretty ...
+                    Gs, Gs, Gs, Gs, A, B,
+                    Gs, Gs, Gs, Gs, A, Gs,
+
+                    A, Gs, Fs, E, Ds, Ds, E, Fs,
+                    A, Gs, Fs, E, Ds, Ds, E, Fs,
+                    A, Gs, Fs, E, A, A, Ds, E, Fs, E

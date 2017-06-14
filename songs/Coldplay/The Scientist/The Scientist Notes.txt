@@ -1,0 +1,5 @@
+                    F, G, F, h(C), A, F, G, F, h(C), A, F, F, G, F, A, A, A, A, G, F,
+                    F, G, F, h(C), A, F, G, F, h(C), A, F, G, F, A, A, A, A, G, F,
+
+                    F, G, F, h(C), A, F, F, G, F, h(C), A, F, G, F, A, A, A, A, G, F,
+                    F, G, F, h(C), A, F, G, F, h(C), A, F, G, F, A, A, A, A, G, F

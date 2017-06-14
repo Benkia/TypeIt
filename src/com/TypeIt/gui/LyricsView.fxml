@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.TextFlow?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Slider?>
+<AnchorPane fx:controller="com.TypeIt.gui.LyricsViewController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<children>
+    <VBox fx:id="box" spacing="30" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
+        <Label fx:id="songTitle" style="-fx-underline: true;" />
+        <TextFlow fx:id="lyricsTextArea" />
+        <Slider fx:id="slider" />
+        <TextArea fx:id="userTextArea" visible="false"/>
+    </VBox>
+</children>
+</AnchorPane>

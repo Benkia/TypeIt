@@ -1,0 +1,11 @@
+                    D, E, F, G, A, A, As, A, As, h(D), A,
+                    G, G, G, F, F, E, D, E, F, D,
+                    l(A), D, E, F, G, A, A, As, A, As, h(D), A,
+                    G, G, G, F, F, E, D, E, F, D,
+
+                    D, h(D), h(D), h(D), h(C), h(D), h(C), As, A,
+                    D, h(D), h(D), h(D), h(C), h(D), h(C), As, A,
+                    h(C), h(C), h(C), F, F, G, A, As, h(C), A, G, F,
+                    G, G, F, F, F, E, D, E, F, D,
+                    G, G, G, F, F, G, A, As, h(C), A, G, F,
+                    G, G, F, F, F, E, D, E, F, D
