@@ -73,6 +73,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         Platform.runLater(() -> {
             this.userTextArea.getScene().setOnKeyReleased(event -> {
+
                 if (event.getCode() == KeyCode.ENTER) {
                     playBackroundTrack();
                     return;

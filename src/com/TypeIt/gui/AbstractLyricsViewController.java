@@ -2,6 +2,7 @@ package com.TypeIt.gui;
 
 import com.TypeIt.gui.language.KeyCodeMap;
 import com.TypeIt.gui.language.Language;
+import com.TypeIt.songs.Song;
 import com.TypeIt.songs.lyrics.LyricsConfiguration;
 import com.TypeIt.main.Constants;
 import com.TypeIt.songs.lyrics.blank.BlankAlgorithmImpl;
@@ -13,11 +14,17 @@ import com.TypeIt.sound.BGPlayer;
 import com.TypeIt.sound.BackgroundTrackPlayer;
 import com.TypeIt.sound.MelodyPlayer;
 import com.TypeIt.sound.MidiBackgroundTrackPlayer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.ImageCursor;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -63,6 +70,17 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 //        }
     }
 
+    private void returnToChooseSongView() {
+        BackgroundTrackPlayer.stopEverything();
+        MidiBackgroundTrackPlayer.stopEverything();
+
+        // Go back to Main menu (Choose song)
+        ObservableList<Song> listOfSongs = FXCollections.observableArrayList(Melody.getListOfAllSongs());
+
+        // Create the first controller
+        ChooseSongController chooseSongController = new ChooseSongController(stage, listOfSongs);
+    }
+
     public void setStage(Stage primaryStage) {
         this.stage = primaryStage;
         stage.centerOnScreen();
@@ -76,6 +94,16 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
             BackgroundTrackPlayer.stopEverything();
             MidiBackgroundTrackPlayer.stopEverything();
             MelodyPlayer.stopEverything();
+        });
+
+        // This will disable the "Press ESC to exit fullscreen" message
+        stage.setFullScreenExitHint("");
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+        stage.getScene().setOnKeyPressed(ke -> {
+            if (ke.getCode() == KeyCode.ESCAPE) {
+                returnToChooseSongView();
+            }
         });
 
         manageSizes();

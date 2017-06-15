@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
@@ -120,6 +121,11 @@ public class MenuController extends AnchorPane implements Initializable {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+
+        // Disable the "Press ESC to exit fullscreen" message
+        stage.setFullScreenExitHint("");
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
         stage.centerOnScreen();
     }
 }
