@@ -71,7 +71,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         songTitle.setTextAlignment(TextAlignment.CENTER);
 
         songTitle.setFont(font);
-        songTitle.setText(Melody.getSongTitle(Constants.fileName));
+        songTitle.setText(Melody.getSongName(Constants.fileName));
 
         lyricsTextArea.setPrefSize(FONT_SIZE*1d, FONT_SIZE*1d);
         lyricsTextArea.setTextAlignment(TextAlignment.CENTER);
@@ -224,8 +224,11 @@ public class LyricsViewController extends AbstractLyricsViewController {
     @Override
     public void refreshScreen() {
         int characters = lyrics.length();
-        int r = mistakes*255 / characters;
-        int g = (totalIndex-mistakes)*255 / characters;
+        double red = Color.RED.getRed();
+        double green = Color.GREEN.getGreen();
+
+        int r = (int) (mistakes*(red*255) / characters);
+        int g = (int) ((totalIndex-mistakes)*(green*255) / characters);
 
         normalize(r);
         normalize(g);
@@ -290,7 +293,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         Text t1 = new Text();
         t1.setStyle("-fx-fill: " + color + ";" +
-                    "-fx-font-size: " + (size*2) + ";");
+                    "-fx-font-size: " + (size*1.5f) + ";");
 
         // Set the font
         if (font != null) {
@@ -341,6 +344,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         final int charsNum = lyrics.length() - whiteSpacesNum;
         final float percentage = ((100f*successes) / charsNum);
 
+
         // Continue to ScoreController
         FXMLLoader loader = new FXMLLoader(ScoreController.class.getResource("ScoreView.fxml"));
         Parent root = null;
@@ -354,13 +358,20 @@ public class LyricsViewController extends AbstractLyricsViewController {
         loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
 
         stage.setTitle("TypeIt - Your score");
-        stage.setScene(new Scene(root, SCORE_WINDOW_WIDTH, SCORE_WINDOW_HEIGHT));
+        stage.setScene(new Scene(root));
+        stage.setFullScreen(true);
+        stage.setMaximized(true);
         stage.show();
 
         loader.<ScoreController>getController().setStage(stage);
 
-        // Save the score to the user data file
-        UserDataManager.scored(Constants.fileName, percentage/100);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Save the score to the user data file
+                UserDataManager.scored(Constants.fileName, percentage/100);
+            }
+        }).start();
     }
 
     private int calculateUserSuccesses() {

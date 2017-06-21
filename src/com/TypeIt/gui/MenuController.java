@@ -43,6 +43,9 @@ public class MenuController extends AnchorPane implements Initializable {
     private Button about;
 
     @FXML
+    private Button quit;
+
+    @FXML
     private VBox box;
 
     @FXML
@@ -63,11 +66,14 @@ public class MenuController extends AnchorPane implements Initializable {
         box.setAlignment(Pos.TOP_CENTER);
         play.setTextAlignment(TextAlignment.CENTER);
         about.setTextAlignment(TextAlignment.CENTER);
+        quit.setTextAlignment(TextAlignment.CENTER);
 
         play.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
         about.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
+        quit.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
         CustomButton.setCustomStyle(play);
         CustomButton.setCustomStyle(about);
+        CustomButton.setCustomStyle(quit);
 
         play.requestFocus();
 
@@ -94,8 +100,15 @@ public class MenuController extends AnchorPane implements Initializable {
                 dialogVbox.setBackground(new Background(backgroundImage));
                 dialogVbox.setAlignment(Pos.CENTER);
 
-                Text text = new Text("TypeIt is a keyboard-based karaoke,\n developed by Asaf Fadida & Naveh Ohana as a MusicTech project.");
-                text.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
+                Font font = FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE);
+                Text text = new Text("TypeIt is a keyboard based karaoke\n Developed by Asaf Fadida and Naveh Ohana");
+                if (font!=null) {
+                    text.setFont(font);
+                }
+                else {
+                    text.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
+                }
+
                 text.setFill(Paint.valueOf("white"));
                 text.setTextAlignment(TextAlignment.CENTER);
 
@@ -115,6 +128,13 @@ public class MenuController extends AnchorPane implements Initializable {
 
                 dialog.setScene(dialogScene);
                 dialog.show();
+            }
+        });
+
+        quit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.exit(0);
             }
         });
     }

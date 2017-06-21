@@ -15,6 +15,8 @@ import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
@@ -87,9 +89,25 @@ public class ScoreController extends AbstractScoreView {
     public void setStage(Stage stage) {
         this.stage = stage;
         stage.centerOnScreen();
+        stage.setFullScreen(true);
 
-        Image cursor = new Image("file:cursor.png");
+        Image cursor = new Image("file:assets/images/cursor.png");
         stage.getScene().setCursor(new ImageCursor(cursor));
+
+        stage.setOnCloseRequest(windowEvent -> {
+            BackgroundTrackPlayer.stopEverything();
+            MidiBackgroundTrackPlayer.stopEverything();
+        });
+
+        // This will disable the "Press ESC to exit fullscreen" message
+        stage.setFullScreenExitHint("");
+        stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+        stage.getScene().setOnKeyPressed(ke -> {
+            if (ke.getCode() == KeyCode.ESCAPE) {
+                confirmButton.getOnAction().handle(null);
+            }
+        });
     }
 
     @Override

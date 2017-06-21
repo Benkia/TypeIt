@@ -20,7 +20,7 @@ public abstract class AbstractScoreView extends AnchorPane implements Initializa
 
     protected void appendToPane(String msg, String color, boolean customFont) {
         Text t1 = new Text();
-        t1.setStyle("-fx-fill: " + color + "; " + "-fx-stroke: black; -fx-stroke-width: 0.5;");
+        t1.setStyle("-fx-fill: " + color + "; " + "-fx-stroke: black; -fx-stroke-width: 0.2;");
 
         Font font = FontUtils.getDefaultFont(getFontSize());
 

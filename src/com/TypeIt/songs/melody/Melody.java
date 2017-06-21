@@ -99,7 +99,7 @@ public class Melody {
                 String bandName = song.getBandName();
 
                 if (bandName != null && bandName != "") {
-                    songTitle += bandName + " - ";
+                    songTitle += bandName + "\n";//" - ";
                 }
 
                 songTitle += songName;
@@ -109,5 +109,10 @@ public class Melody {
         }
 
         return songTitle;
+    }
+
+    public static String getSongName(String fileName) {
+        String[] splitz = fileName.split("/");
+        return splitz[splitz.length-1].replace("&", "and");
     }
 }

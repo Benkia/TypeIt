@@ -48,6 +48,9 @@ public class ChooseSongTableCellController extends AbstractScoreView {
         songNameLabel.setFont(Font.font("Guttman Yad Brush", FontWeight.SEMI_BOLD, getFontSize()*1.05));
         bandNameLabel.setFont(Font.font("Guttman Yad Brush", FontWeight.LIGHT, getFontSize()*0.7));
 
+//        songNameLabel.setFont(FontUtils.getDefaultFont(getFontSize()*1.3));
+//        bandNameLabel.setFont(FontUtils.getDefaultFont(getFontSize()*0.7));
+
         refreshLabels();
     }
 

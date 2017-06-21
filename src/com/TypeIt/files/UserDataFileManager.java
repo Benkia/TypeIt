@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by Naveh on 11/1/2017.
  */
 public class UserDataFileManager {
-    private final static String USER_DATA_FILE_PATH = "UserData.csv";
+    private final static String USER_DATA_FILE_PATH = "assets/user_data/" + "UserData.csv";
 
     // Delimiter used in CSV file
     private static final String COMMA_DELIMITER = ",";
@@ -32,7 +32,7 @@ public class UserDataFileManager {
             String line;
 
             // Create the file reader
-            fileReader = new BufferedReader(new FileReader("assets/user_data/" + USER_DATA_FILE_PATH));
+            fileReader = new BufferedReader(new FileReader(USER_DATA_FILE_PATH));
 
             // Read the CSV file header to skip it
             fileReader.readLine();

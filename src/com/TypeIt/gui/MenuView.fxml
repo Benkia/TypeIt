@@ -11,6 +11,7 @@
         <ImageView fx:id="logo" />
         <Button fx:id="play" text="Play"/>
         <Button fx:id="about" text="About"/>
+        <Button fx:id="quit" text="Quit"/>
     </VBox>
 </children>
 </AnchorPane>
