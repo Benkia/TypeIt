@@ -42,7 +42,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected boolean bendPitch;
     protected boolean challengeMode;
     protected Rectangle2D screenBounds;
-    protected Font font;
+    protected Font font = FontUtils.getDefaultFont();
 
     @FXML
     protected Slider slider;
@@ -66,28 +66,6 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected int mistakes = 0;
 
     private Language lang;
-
-    protected Font getDefaultFont(double fontSize) {
-        Font f = null;
-
-        try {
-            // Load a custom font from a specific location
-            f = Font.loadFont(new FileInputStream(new File("assets/fonts/NeonTech.ttf")), fontSize);
-        }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        return f;
-    }
-
-    protected Font getDefaultFont() {
-        if (font == null) {
-           font = this.getDefaultFont((Constants.DEFAULT_FONT_SIZE * 1.5d));
-        }
-
-        return font;
-    }
 
     public AbstractLyricsViewController(){
         Melody melody = new Melody();

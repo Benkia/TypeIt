@@ -63,9 +63,6 @@ public class LyricsViewController extends AbstractLyricsViewController {
     void initialize() {
         assert lyricsTextArea != null : "fx:id=\"lyricsTextArea\" was not injected: check your FXML file 'LyricsViewController.fxml'.";
 
-        // Initialize the font
-        Font font = getDefaultFont();
-
         screenBounds = Screen.getPrimary().getVisualBounds();
 
         this.userTextArea.requestFocus();
@@ -174,7 +171,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         int textLength = l.getText().length();
         double fontSize = labelWidth / textLength;
 
-        Font newFont = getDefaultFont(fontSize);
+        Font newFont = FontUtils.getDefaultFont(fontSize);
 
         if (newFont != null) {
             l.setFont(newFont);

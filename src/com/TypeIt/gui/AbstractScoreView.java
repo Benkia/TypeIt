@@ -18,10 +18,19 @@ public abstract class AbstractScoreView extends AnchorPane implements Initializa
     @FXML
     protected TextFlow scoreLabel;
 
-    protected void appendToPane(String msg, String color) {
+    protected void appendToPane(String msg, String color, boolean customFont) {
         Text t1 = new Text();
         t1.setStyle("-fx-fill: " + color + "; " + "-fx-stroke: black; -fx-stroke-width: 0.5;");
-        t1.setFont(Font.font("Courier New", FontWeight.BOLD, getFontSize()));
+
+        Font font = FontUtils.getDefaultFont(getFontSize());
+
+        if (customFont && font != null) {
+            t1.setFont(font);
+        }
+        else {
+            t1.setFont(Font.font("Courier New", FontWeight.BOLD, getFontSize()));
+        }
+
         t1.setText(msg);
 
         scoreLabel.getChildren().add(t1);

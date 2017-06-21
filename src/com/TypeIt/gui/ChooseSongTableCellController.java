@@ -66,9 +66,9 @@ public class ChooseSongTableCellController extends AbstractScoreView {
         songNameLabel.setStyle("-fx-fill: black; -fx-stroke: "+colorString+"; -fx-stroke-width: 0.3;");
         scoreLabel.getChildren().removeAll(scoreLabel.getChildren());
 
-        appendToPane("(", "black");
-        appendToPane(String.valueOf((int)percentage), colorString);
-        appendToPane("%)", "black");
+        appendToPane("(", "black", false);
+        appendToPane(String.valueOf((int)percentage), colorString, true);
+        appendToPane("%)", "black", false);
     }
 
     @Override
