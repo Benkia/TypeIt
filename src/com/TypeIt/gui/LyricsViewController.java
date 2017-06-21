@@ -24,9 +24,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.Screen;
 
+import java.awt.peer.FontPeer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static java.lang.Character.isWhitespace;
@@ -58,17 +63,20 @@ public class LyricsViewController extends AbstractLyricsViewController {
     void initialize() {
         assert lyricsTextArea != null : "fx:id=\"lyricsTextArea\" was not injected: check your FXML file 'LyricsViewController.fxml'.";
 
+        // Initialize the font
+        Font font = getDefaultFont();
+
         screenBounds = Screen.getPrimary().getVisualBounds();
 
         this.userTextArea.requestFocus();
 
         box.setAlignment(Pos.TOP_CENTER);
-
-        songTitle.setText(Melody.getSongTitle(Constants.fileName));
-        songTitle.setFont(Font.font("Courier New", FontWeight.BOLD, FONT_SIZE*1.2f));
-        lyricsTextArea.setPrefSize(FONT_SIZE*1d, FONT_SIZE*1d);
-
         songTitle.setTextAlignment(TextAlignment.CENTER);
+
+        songTitle.setFont(font);
+        songTitle.setText(Melody.getSongTitle(Constants.fileName));
+
+        lyricsTextArea.setPrefSize(FONT_SIZE*1d, FONT_SIZE*1d);
         lyricsTextArea.setTextAlignment(TextAlignment.CENTER);
 
         Platform.runLater(() -> {
@@ -125,6 +133,9 @@ public class LyricsViewController extends AbstractLyricsViewController {
         if (Constants.fileName.equals("Ha Tikva")) {
             slider.setMax(MAX_SPEED*2);
         }
+
+        // Hide the crappy slider!!!!!
+        slider.setVisible(false);
     }
 
     @Override
@@ -158,11 +169,19 @@ public class LyricsViewController extends AbstractLyricsViewController {
     }
 
     private void setWidthAndFontSize(Label l, double labelWidth) {
+        setWidth(l, labelWidth);
+
         int textLength = l.getText().length();
         double fontSize = labelWidth / textLength;
 
-        l.setFont(Font.font("Courier New", FontWeight.BOLD, fontSize));
-        setWidth(l, labelWidth);
+        Font newFont = getDefaultFont(fontSize);
+
+        if (newFont != null) {
+            l.setFont(newFont);
+        }
+        else {
+            l.setFont(Font.font("Courier New", FontWeight.BOLD, fontSize));
+        }
 
         l.setAlignment(Pos.CENTER);
         l.setTextAlignment(TextAlignment.CENTER);
@@ -194,8 +213,29 @@ public class LyricsViewController extends AbstractLyricsViewController {
         userTextArea.setText(currentSyllable.substring(0, currentCharIndex+1));
     }
 
+    private int normalize(int n) {
+        if (n < 0) {
+            return 0;
+        }
+        else if (n > 255) {
+            return 255;
+        }
+
+        return n;
+    }
+
     @Override
     public void refreshScreen() {
+        int characters = lyrics.length();
+        int r = mistakes*255 / characters;
+        int g = (totalIndex-mistakes)*255 / characters;
+
+        normalize(r);
+        normalize(g);
+
+        // Make the song title go red/green as the song progresses
+        songTitle.setTextFill(Color.rgb(r, g, 0));
+
         lyricsTextArea.getChildren().removeAll(lyricsTextArea.getChildren());
 
         try {
@@ -252,8 +292,16 @@ public class LyricsViewController extends AbstractLyricsViewController {
         }
 
         Text t1 = new Text();
-        t1.setStyle("-fx-fill: " + color + ";");
-        t1.setFont(Font.font("Courier New", FontWeight.BOLD, size));
+        t1.setStyle("-fx-fill: " + color + ";" +
+                    "-fx-font-size: " + (size*2) + ";");
+
+        // Set the font
+        if (font != null) {
+            t1.setFont(font);
+        }
+        else {
+            t1.setFont(Font.font("Courier New", FontWeight.BOLD, size));
+        }
 
         t1.setText(msg);
 

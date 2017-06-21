@@ -25,8 +25,12 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import static java.lang.Character.isWhitespace;
@@ -38,6 +42,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected boolean bendPitch;
     protected boolean challengeMode;
     protected Rectangle2D screenBounds;
+    protected Font font;
 
     @FXML
     protected Slider slider;
@@ -58,8 +63,31 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected int totalIndex = 0;
     protected int currentCharIndex = 0;
     protected int currentSyllableIndex = 0;
+    protected int mistakes = 0;
 
     private Language lang;
+
+    protected Font getDefaultFont(double fontSize) {
+        Font f = null;
+
+        try {
+            // Load a custom font from a specific location
+            f = Font.loadFont(new FileInputStream(new File("assets/fonts/NeonTech.ttf")), fontSize);
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return f;
+    }
+
+    protected Font getDefaultFont() {
+        if (font == null) {
+           font = this.getDefaultFont((Constants.DEFAULT_FONT_SIZE * 1.5d));
+        }
+
+        return font;
+    }
 
     public AbstractLyricsViewController(){
         Melody melody = new Melody();
@@ -240,6 +268,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     @Override
     public void userIsIncorrect(String currentSyllable) {
         // User failed
+        mistakes++;
         userTypedCorrect[totalIndex] = false;
         melodyPlayer.playFailedNote(notes[currentSyllableIndex]);
         incrementCharacter(false);
