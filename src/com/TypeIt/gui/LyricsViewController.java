@@ -200,8 +200,6 @@ public class LyricsViewController extends AbstractLyricsViewController {
                         notes.removeAll(toRemove);
                     }
                 }
-
-                System.out.println("Finished running!");
             }
         }).start();
     }
