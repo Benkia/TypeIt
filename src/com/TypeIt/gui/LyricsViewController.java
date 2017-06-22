@@ -73,6 +73,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         screenBounds = Screen.getPrimary().getVisualBounds();
         canvas.setWidth(screenBounds.getWidth());
         canvas.setHeight(screenBounds.getHeight());
+        canvas.setLayoutY(0);
 
         this.userTextArea.requestFocus();
 
@@ -117,7 +118,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, true);
 
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/lyrics_background.png"),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/lyrics_background.jpg"),
                 BackgroundRepeat.REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
@@ -125,23 +126,23 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         box.setBackground(new Background(backgroundImage));
 
-        slider.setMin(MIN_SPEED);
-        slider.setMax(MAX_SPEED);
-        slider.setValue(MAX_SPEED);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setMajorTickUnit(0.1d);
-        slider.setMinorTickCount(10);
-        slider.setBlockIncrement(0.1d);
-        slider.setOnMouseDragged(mouseEvent -> setSpeed((float) slider.getValue()));
-        slider.valueProperty().addListener((observable, oldValue, newValue) -> setSpeed((float) slider.getValue()));
-
-        if (Constants.fileName.equals("Ha Tikva")) {
-            slider.setMax(MAX_SPEED*2);
-        }
-
-        // Hide the crappy slider!!!!!
-        slider.setVisible(false);
+//        slider.setMin(MIN_SPEED);
+//        slider.setMax(MAX_SPEED);
+//        slider.setValue(MAX_SPEED);
+//        slider.setShowTickLabels(true);
+//        slider.setShowTickMarks(true);
+//        slider.setMajorTickUnit(0.1d);
+//        slider.setMinorTickCount(10);
+//        slider.setBlockIncrement(0.1d);
+//        slider.setOnMouseDragged(mouseEvent -> setSpeed((float) slider.getValue()));
+//        slider.valueProperty().addListener((observable, oldValue, newValue) -> setSpeed((float) slider.getValue()));
+//
+//        if (Constants.fileName.equals("Ha Tikva")) {
+//            slider.setMax(MAX_SPEED*2);
+//        }
+//
+//        // Hide the crappy slider!!!!!
+//        slider.setVisible(false);
 
         running = true;
 
@@ -227,12 +228,11 @@ public class LyricsViewController extends AbstractLyricsViewController {
     protected void manageSizes() {
         // 1300 / 1920
         double boxWidth = screenBounds.getWidth()*0.65f;
-        setWidth(slider, boxWidth/2);
-        // TODO: Set the width of the StackPane?
+//        setWidth(slider, boxWidth/2);
 //        setWidth(box, boxWidth);
         setWidth(lyricsTextArea, boxWidth*0.95f);
 //        lyricsTextArea.setPrefSize(FONT_SIZE);
-        setWidthAndFontSize(songTitle, boxWidth*1.2);
+        setWidthAndFontSize(songTitle, boxWidth);
     }
 
     private void setWidthAndFontSize(Label l, double labelWidth) {
@@ -252,6 +252,9 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         l.setAlignment(Pos.CENTER);
         l.setTextAlignment(TextAlignment.CENTER);
+
+        l.setTranslateY((fontSize/2.5f));
+        l.translateYProperty();
     }
 
     private void setWidth(Region r, double width) {
@@ -293,18 +296,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
     @Override
     public void refreshScreen() {
-        int characters = lyrics.length();
-        double red = Color.RED.getRed();
-        double green = Color.GREEN.getGreen();
-
-        int r = (int) (mistakes*(red*255) / characters);
-        int g = (int) ((totalIndex-mistakes)*(green*255) / characters);
-
-        normalize(r);
-        normalize(g);
-
-        // Make the song title go red/green as the song progresses
-        songTitle.setTextFill(Color.rgb(r, g, 0));
+        updateSongTitleColor();
 
         lyricsTextArea.getChildren().removeAll(lyricsTextArea.getChildren());
 
@@ -353,6 +345,25 @@ public class LyricsViewController extends AbstractLyricsViewController {
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateSongTitleColor() {
+        int characters = lyrics.length();
+        double red = Color.RED.getRed();
+        double green = Color.GREEN.getGreen();
+
+        int r = (int) (mistakes*(red*255) / characters);
+        int g = (int) ((totalIndex-mistakes)*(green*255) / characters);
+
+        normalize(r);
+        normalize(g);
+
+        // Make it more subtle
+        r /= 2;
+        g /= 2;
+
+        // Make the song title go red/green as the song progresses
+        songTitle.setTextFill(Color.rgb(r, g, 0));
     }
 
     private void appendToPane(String msg, String color, boolean isCurrentCharacter) {
@@ -409,6 +420,18 @@ public class LyricsViewController extends AbstractLyricsViewController {
         }
     }
 
+    private static FXMLLoader loader = new FXMLLoader(ScoreController.class.getResource("ScoreView.fxml"));
+    private static Parent scoreView;
+
+    static {
+        try {
+            scoreView = loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createScoreScene() {
         final int successes = calculateUserSuccesses();
         final int charsNum = lyrics.length() - whiteSpacesNum;
@@ -417,24 +440,14 @@ public class LyricsViewController extends AbstractLyricsViewController {
         running = false;
 
         // Continue to ScoreController
-        FXMLLoader loader = new FXMLLoader(ScoreController.class.getResource("ScoreView.fxml"));
-        Parent root = null;
-        try {
-            root = loader.load();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        stage.setTitle("TypeIt - Your score");
+        loader.<ScoreController>getController().setStage(stage);
         loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
 
-        stage.setTitle("TypeIt - Your score");
-        stage.setScene(new Scene(root));
+        stage.setScene(new Scene(scoreView));
         stage.setFullScreen(true);
         stage.setMaximized(true);
         stage.show();
-
-        loader.<ScoreController>getController().setStage(stage);
 
         new Thread(new Runnable() {
             @Override
@@ -469,46 +482,46 @@ public class LyricsViewController extends AbstractLyricsViewController {
     private void done() {
         createScoreScene();
 
-//        if (bendPitch) {
-            // Start a new thread, because we use Thread.sleep()
-            new Thread(() -> {
-                // Make sure we don't divide by 0
-//                if (bgPlayer.getSpeed() != MAX_SPEED) {
-                if (!closeEnoughToOriginalSpeed()) {
-                    final float iterations = (Math.abs(MAX_SPEED - bgPlayer.getSpeed()) / SPEED_TO_CHANGE_EVERY_KEY);
-
-                    // Example:
-                    // speed = 0.5f
-                    // millis = 3000 / (((1-0.5)/0.01)) = 3000/ (0.5/0.01) = 3000/50 = 60
-                    final long millisToSleep = (long) ((float) MILLIS_TO_NORMAL_SPEED / iterations);
-
-                    // As long as we haven't reached original speed
-                    while (bgPlayer.isPlaying() && !closeEnoughToOriginalSpeed()) {
-                        int sign = 1;
-                        if (bgPlayer.getSpeed() > MAX_SPEED) {
-                            sign = -1;
-                        }
-                        // Keep adding speed
-                        addSpeed(SPEED_TO_CHANGE_EVERY_KEY*sign);
-
-                        try {
-                            Thread.sleep(millisToSleep);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }).start();
-//        }
+////        if (bendPitch) {
+//            // Start a new thread, because we use Thread.sleep()
+//            new Thread(() -> {
+//                // Make sure we don't divide by 0
+////                if (bgPlayer.getSpeed() != MAX_SPEED) {
+//                if (!closeEnoughToOriginalSpeed()) {
+//                    final float iterations = (Math.abs(MAX_SPEED - bgPlayer.getSpeed()) / SPEED_TO_CHANGE_EVERY_KEY);
+//
+//                    // Example:
+//                    // speed = 0.5f
+//                    // millis = 3000 / (((1-0.5)/0.01)) = 3000/ (0.5/0.01) = 3000/50 = 60
+//                    final long millisToSleep = (long) ((float) MILLIS_TO_NORMAL_SPEED / iterations);
+//
+//                    // As long as we haven't reached original speed
+//                    while (bgPlayer.isPlaying() && !closeEnoughToOriginalSpeed()) {
+//                        int sign = 1;
+//                        if (bgPlayer.getSpeed() > MAX_SPEED) {
+//                            sign = -1;
+//                        }
+//                        // Keep adding speed
+//                        addSpeed(SPEED_TO_CHANGE_EVERY_KEY*sign);
+//
+//                        try {
+//                            Thread.sleep(millisToSleep);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }).start();
+////        }
     }
 
-    private static final float delta = SPEED_TO_CHANGE_EVERY_KEY*0.99f;
-
-    private boolean closeEnoughToOriginalSpeed() {
-        return bgPlayer.getSpeed() >= MAX_SPEED - delta
-               &&
-               bgPlayer.getSpeed() <= MAX_SPEED + delta;
-    }
+//    private static final float delta = SPEED_TO_CHANGE_EVERY_KEY*0.99f;
+//
+//    private boolean closeEnoughToOriginalSpeed() {
+//        return bgPlayer.getSpeed() >= MAX_SPEED - delta
+//               &&
+//               bgPlayer.getSpeed() <= MAX_SPEED + delta;
+//    }
 
     private Random rand = new Random();
     private final Image images[] = new Image[] {

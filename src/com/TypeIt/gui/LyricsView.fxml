@@ -14,9 +14,9 @@
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <VBox fx:id="box" spacing="70" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Label fx:id="songTitle" style="-fx-underline: true;" />
-<!--        <Label visible="false"/>-->
+            <Label visible="false"/>
             <TextFlow fx:id="lyricsTextArea" />
-            <Slider fx:id="slider" />
+            <!--<Slider fx:id="slider" />-->
             <TextArea fx:id="userTextArea" visible="false" />
         </VBox>
 

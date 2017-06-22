@@ -89,7 +89,7 @@ public class ScoreController extends AbstractScoreView {
     public void setStage(Stage stage) {
         this.stage = stage;
         stage.centerOnScreen();
-        stage.setFullScreen(true);
+//        stage.setFullScreen(true);
 
         Image cursor = new Image("file:assets/images/cursor.png");
         stage.getScene().setCursor(new ImageCursor(cursor));

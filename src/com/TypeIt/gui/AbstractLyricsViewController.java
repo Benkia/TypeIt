@@ -48,8 +48,8 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     @FXML
     protected Canvas canvas;
 
-    @FXML
-    protected Slider slider;
+//    @FXML
+//    protected Slider slider;
 
     // Music players
     protected final MelodyPlayer melodyPlayer = new MelodyPlayer(0);
@@ -242,9 +242,9 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     public void userIsCorrect(String currentSyllable) {
         userTypedCorrect[totalIndex] = true;
 
-        if (bendPitch) {
-            addSpeed(SPEED_TO_CHANGE_EVERY_KEY);
-        }
+//        if (bendPitch) {
+//            addSpeed(SPEED_TO_CHANGE_EVERY_KEY);
+//        }
 
         // If syllable just started, currentOctave would be 0.
         melodyPlayer.playNote(notes[currentSyllableIndex], currentOctave);
@@ -260,15 +260,15 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         melodyPlayer.playFailedNote(notes[currentSyllableIndex]);
         incrementCharacter(false);
 
-        if (bendPitch) {
-            addSpeed(-SPEED_TO_CHANGE_EVERY_KEY);
-        }
+//        if (bendPitch) {
+//            addSpeed(-SPEED_TO_CHANGE_EVERY_KEY);
+//        }
     }
 
     @Override
     public void playBackroundTrack() {
         bgPlayer.play();
-        slider.setValue(MAX_SPEED);
+//        slider.setValue(MAX_SPEED);
     }
 
     protected void setSpeed(float newSpeed) {
@@ -285,34 +285,34 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
         }
     }
 
-    protected void addSpeed(float speedToAdd) {
-        if (bgPlayer.isPlaying()) {
-            float currentSpeed = bgPlayer.getSpeed();
-            float newSpeed = currentSpeed + speedToAdd;
-
-            boolean midi = (bgPlayer instanceof MidiBackgroundTrackPlayer);
-
-            if (newSpeed < MIN_SPEED) {
-                newSpeed = MIN_SPEED;
-            }
-            if (!midi && newSpeed > MAX_SPEED) {
-                newSpeed = MAX_SPEED;
-            }
-            else if (midi && newSpeed > slider.getMax()) {
-                newSpeed = (float) slider.getMax();
-            }
-
-            bgPlayer.setMusicSpeed(newSpeed);
-
-            if (!midi) {
-                melodyPlayer.setPitchBendForSpeed(newSpeed);
-            }
-
-            slider.setValue(newSpeed);
-
-            if (currentSpeed != newSpeed) {
-                System.out.println("Speed = " + newSpeed);
-            }
-        }
-    }
+//    protected void addSpeed(float speedToAdd) {
+//        if (bgPlayer.isPlaying()) {
+//            float currentSpeed = bgPlayer.getSpeed();
+//            float newSpeed = currentSpeed + speedToAdd;
+//
+//            boolean midi = (bgPlayer instanceof MidiBackgroundTrackPlayer);
+//
+//            if (newSpeed < MIN_SPEED) {
+//                newSpeed = MIN_SPEED;
+//            }
+//            if (!midi && newSpeed > MAX_SPEED) {
+//                newSpeed = MAX_SPEED;
+//            }
+//            else if (midi && newSpeed > slider.getMax()) {
+//                newSpeed = (float) slider.getMax();
+//            }
+//
+//            bgPlayer.setMusicSpeed(newSpeed);
+//
+//            if (!midi) {
+//                melodyPlayer.setPitchBendForSpeed(newSpeed);
+//            }
+//
+//            slider.setValue(newSpeed);
+//
+//            if (currentSpeed != newSpeed) {
+//                System.out.println("Speed = " + newSpeed);
+//            }
+//        }
+//    }
 }
