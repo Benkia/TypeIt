@@ -69,6 +69,8 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected int currentSyllableIndex = 0;
     protected int mistakes = 0;
 
+    protected Boolean running = false;
+
     private Language lang;
 
     public AbstractLyricsViewController(){
@@ -86,6 +88,8 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         // Go back to Main menu (Choose song)
         ObservableList<Song> listOfSongs = FXCollections.observableArrayList(Melody.getListOfAllSongs());
+
+        running = false;
 
         // Create the first controller
         ChooseSongController chooseSongController = new ChooseSongController(stage, listOfSongs);
@@ -244,7 +248,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         // If syllable just started, currentOctave would be 0.
         melodyPlayer.playNote(notes[currentSyllableIndex], currentOctave);
-        drawNote();
+        addGuiNote();
         incrementCharacter(true);
     }
 

@@ -37,6 +37,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static java.lang.Character.isWhitespace;
@@ -140,6 +142,68 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         // Hide the crappy slider!!!!!
         slider.setVisible(false);
+
+        running = true;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final GraphicsContext gc = canvas.getGraphicsContext2D();
+
+                while (running) {
+                    List<GuiNote> toRemove = new ArrayList<>();
+
+                    Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                gc.clearRect(0, 0, screenBounds.getWidth(), screenBounds.getHeight());
+                            }
+                        });
+
+                    synchronized (notes) {
+                        for (GuiNote note : notes) {
+                            Image image = images[note.getImageIndex()];
+
+                            final double W = image.getWidth();
+                            final double H = image.getHeight();
+
+                            if (note.getY() < -H) {
+                                // Save it and later remove it from the list
+                                toRemove.add(note);
+
+//                                Platform.runLater(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        gc.clearRect(note.getX(), note.getY(), W+1, (H+note.getVelocity()));
+//                                    }
+//                                });
+                            }
+                            else {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        note.move();
+//                                        gc.clearRect(note.getX(), note.getY(), W+1, (H+note.getVelocity()));
+                                        gc.drawImage(image, note.getX(), note.getY());
+                                    }
+                                });
+                            }
+                        }
+
+                        try {
+                            Thread.sleep(33l);
+                        }
+                        catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        notes.removeAll(toRemove);
+                    }
+                }
+
+                System.out.println("Finished running!");
+            }
+        }).start();
     }
 
     @Override
@@ -352,6 +416,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         final int charsNum = lyrics.length() - whiteSpacesNum;
         final float percentage = ((100f*successes) / charsNum);
 
+        running = false;
 
         // Continue to ScoreController
         FXMLLoader loader = new FXMLLoader(ScoreController.class.getResource("ScoreView.fxml"));
@@ -456,55 +521,22 @@ public class LyricsViewController extends AbstractLyricsViewController {
             new Image("file:assets/images/note5.png")
     };
 
+    private final List<GuiNote> notes = new ArrayList<>();
+
     @Override
-    public void drawNote() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int num = rand.nextInt(5);
+    public void addGuiNote() {
+        int num = rand.nextInt(5);
+        Image image = images[num];
 
-                Image image = images[num];
+        final double W = image.getWidth();
+        final double H = image.getHeight();
 
-                final double W = image.getWidth();
-                final double H = image.getHeight();
+        double x = rand.nextDouble() * (screenBounds.getWidth() - W);
+        double y = screenBounds.getHeight() - H;
+        double velocity = screenBounds.getHeight()/33;
 
-                final GraphicsContext gc = canvas.getGraphicsContext2D();
-
-                double y = screenBounds.getHeight() - H;
-                double velocity = screenBounds.getHeight()/33;
-
-                double x = rand.nextDouble() * (screenBounds.getWidth() - H);
-
-                while (y > -H) {
-                    // All graphics manipulations should be done in the main thread.
-                    double finalY = y;
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            gc.clearRect(x, finalY, W * 2, H * 2);
-                            gc.drawImage(image, x, finalY);
-                        }
-                    });
-
-                    y -= velocity;
-
-                    try {
-                        Thread.sleep(33l);
-                    }
-                    catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Finally, clear the rect.
-                double finalY1 = y;
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        gc.clearRect(x, finalY1, W+1, H * 2);
-                    }
-                });
-            }
-        }).start();
+        synchronized (notes) {
+            notes.add(new GuiNote(x, y, velocity, num));
+        }
     }
 }

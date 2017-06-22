@@ -8,7 +8,7 @@ import com.TypeIt.gui.language.Language;
 public interface ILyricsViewController {
     void setKeyboardLanguage(Language language);
     void playBackroundTrack();
-    void drawNote();
+    void addGuiNote();
 
     void manageKeyTyped(char typedChar);
     boolean didUserTypeCorrectly(char typedChar);
