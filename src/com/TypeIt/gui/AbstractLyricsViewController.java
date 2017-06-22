@@ -20,6 +20,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.ImageCursor;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -43,6 +44,9 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
     protected boolean challengeMode;
     protected Rectangle2D screenBounds;
     protected Font font = FontUtils.getDefaultFont();
+
+    @FXML
+    protected Canvas canvas;
 
     @FXML
     protected Slider slider;
@@ -240,6 +244,7 @@ public abstract class AbstractLyricsViewController implements ILyricsViewControl
 
         // If syllable just started, currentOctave would be 0.
         melodyPlayer.playNote(notes[currentSyllableIndex], currentOctave);
+        drawNote();
         incrementCharacter(true);
     }
 

@@ -12,12 +12,16 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Random;
 
 import static java.lang.Character.isWhitespace;
 import static javafx.stage.Screen.getPrimary;
@@ -64,6 +69,8 @@ public class LyricsViewController extends AbstractLyricsViewController {
         assert lyricsTextArea != null : "fx:id=\"lyricsTextArea\" was not injected: check your FXML file 'LyricsViewController.fxml'.";
 
         screenBounds = Screen.getPrimary().getVisualBounds();
+        canvas.setWidth(screenBounds.getWidth());
+        canvas.setHeight(screenBounds.getHeight());
 
         this.userTextArea.requestFocus();
 
@@ -159,7 +166,8 @@ public class LyricsViewController extends AbstractLyricsViewController {
         // 1300 / 1920
         double boxWidth = screenBounds.getWidth()*0.65f;
         setWidth(slider, boxWidth/2);
-        setWidth(box, boxWidth);
+        // TODO: Set the width of the StackPane?
+//        setWidth(box, boxWidth);
         setWidth(lyricsTextArea, boxWidth*0.95f);
 //        lyricsTextArea.setPrefSize(FONT_SIZE);
         setWidthAndFontSize(songTitle, boxWidth*1.2);
@@ -437,5 +445,66 @@ public class LyricsViewController extends AbstractLyricsViewController {
         return bgPlayer.getSpeed() >= MAX_SPEED - delta
                &&
                bgPlayer.getSpeed() <= MAX_SPEED + delta;
+    }
+
+    private Random rand = new Random();
+    private final Image images[] = new Image[] {
+            new Image("file:assets/images/note1.png"),
+            new Image("file:assets/images/note2.png"),
+            new Image("file:assets/images/note3.png"),
+            new Image("file:assets/images/note4.png"),
+            new Image("file:assets/images/note5.png")
+    };
+
+    @Override
+    public void drawNote() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int num = rand.nextInt(5);
+
+                Image image = images[num];
+
+                final double W = image.getWidth();
+                final double H = image.getHeight();
+
+                final GraphicsContext gc = canvas.getGraphicsContext2D();
+
+                double y = screenBounds.getHeight() - H;
+                double velocity = screenBounds.getHeight()/33;
+
+                double x = rand.nextDouble() * (screenBounds.getWidth() - H);
+
+                while (y > -H) {
+                    // All graphics manipulations should be done in the main thread.
+                    double finalY = y;
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            gc.clearRect(x, finalY, W * 2, H * 2);
+                            gc.drawImage(image, x, finalY);
+                        }
+                    });
+
+                    y -= velocity;
+
+                    try {
+                        Thread.sleep(33l);
+                    }
+                    catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Finally, clear the rect.
+                double finalY1 = y;
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        gc.clearRect(x, finalY1, W+1, H * 2);
+                    }
+                });
+            }
+        }).start();
     }
 }
