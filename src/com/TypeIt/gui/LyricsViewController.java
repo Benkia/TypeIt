@@ -355,8 +355,8 @@ public class LyricsViewController extends AbstractLyricsViewController {
         int r = (int) (mistakes*(red*255) / characters);
         int g = (int) ((totalIndex-mistakes)*(green*255) / characters);
 
-        normalize(r);
-        normalize(g);
+        r = normalize(r);
+        g = normalize(g);
 
         // Make it more subtle
         r /= 2;

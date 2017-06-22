@@ -36,9 +36,24 @@ public abstract class AbstractScoreView extends AnchorPane implements Initializa
         scoreLabel.getChildren().add(t1);
     }
 
+    private double normalize(double f) {
+        if (f < 0) {
+            return 0;
+        }
+        if (f > 1) {
+            return 1;
+        }
+
+        return f;
+    }
+
     protected String createColorString() {
         final double fraction = ((double)percentage/100);
-        Color color = Color.color(1-(fraction/2), fraction, 0);
+
+        double r = normalize(1-(fraction/2));
+        double g = normalize(fraction);
+
+        Color color = Color.color(r, g, 0);
         String colorString = color.toString();
         colorString = colorString.replaceAll("0x", "#");
 
