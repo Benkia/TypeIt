@@ -54,7 +54,7 @@ public class ScoreController extends AbstractScoreView {
                 BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
-        box.setAlignment(Pos.CENTER);
+        box.setAlignment(Pos.TOP_CENTER);
         box.setBackground(new Background(backgroundImage));
 
         scoreLabel.setTextAlignment(TextAlignment.CENTER);
@@ -69,6 +69,10 @@ public class ScoreController extends AbstractScoreView {
             public void handle(ActionEvent event) {
                 BackgroundTrackPlayer.stopEverything();
                 MidiBackgroundTrackPlayer.stopEverything();
+
+                // Disable the full-screen (pretty much)
+                stage.setMinHeight(0);
+                stage.setMinWidth(0);
 
                 // Go back to Main menu (Choose song)
                 ObservableList<Song> listOfSongs = FXCollections.observableArrayList(Melody.getListOfAllSongs());
@@ -92,7 +96,7 @@ public class ScoreController extends AbstractScoreView {
 
     public void setStage(Stage stage) {
         this.stage = stage;
-        stage.centerOnScreen();
+//        stage.centerOnScreen();
 //        stage.setFullScreen(true);
 
         Image cursor = new Image("file:assets/images/cursor.png");

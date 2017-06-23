@@ -34,12 +34,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.stage.Screen;
+import javafx.stage.WindowEvent;
 
 import java.awt.peer.FontPeer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -248,6 +250,10 @@ public class LyricsViewController extends AbstractLyricsViewController {
         int textLength = l.getText().length();
         double fontSize = labelWidth / textLength;
 
+        if (fontSize > 100) {
+            fontSize = 100;
+        }
+
         Font newFont = FontUtils.getDefaultFont(fontSize);
 
         if (newFont != null) {
@@ -427,17 +433,8 @@ public class LyricsViewController extends AbstractLyricsViewController {
         }
     }
 
-    private static FXMLLoader loader = new FXMLLoader(ScoreController.class.getResource("ScoreView.fxml"));
-    private static Parent scoreView;
-
-    static {
-        try {
-            scoreView = loader.load();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private static URL resource = ScoreController.class.getResource("ScoreView.fxml");
+    private Parent scoreView = null;
 
     public void createScoreScene() {
         final int successes = calculateUserSuccesses();
@@ -446,25 +443,28 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         running = false;
 
+        FXMLLoader loader = new FXMLLoader(resource);
+        try {
+            scoreView = loader.load();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Continue to ScoreController
         stage.setTitle("TypeIt - Your score");
 
         loader.<ScoreController>getController().setStage(stage);
         loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
 
-        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-
+        miserablyTryToFullScreen(scoreView);
         stage.setScene(new Scene(scoreView));
+        miserablyTryToFullScreen(scoreView);
 
-        scoreView.prefHeight(primaryScreenBounds.getHeight());
-        scoreView.prefWidth(primaryScreenBounds.getWidth());
+//        stage.setFullScreen(true);
+//        stage.setMaximized(true);
 
-        stage.setX(primaryScreenBounds.getMinX());
-        stage.setY(primaryScreenBounds.getMinY());
-
-        stage.setFullScreen(true);
-        stage.setMaximized(true);
-        stage.show();
+//        stage.show();
 
         new Thread(new Runnable() {
             @Override
@@ -473,6 +473,25 @@ public class LyricsViewController extends AbstractLyricsViewController {
                 UserDataManager.scored(Constants.fileName, percentage/100);
             }
         }).start();
+    }
+
+    private void miserablyTryToFullScreen(Parent scoreView) {
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+
+        scoreView.minHeight(primaryScreenBounds.getHeight());
+        scoreView.prefHeight(primaryScreenBounds.getHeight());
+        scoreView.maxHeight(primaryScreenBounds.getHeight());
+        scoreView.minWidth(primaryScreenBounds.getWidth());
+        scoreView.prefWidth(primaryScreenBounds.getWidth());
+        scoreView.maxWidth(primaryScreenBounds.getWidth());
+
+        stage.setMinHeight(primaryScreenBounds.getHeight());
+        stage.setMaxHeight(primaryScreenBounds.getHeight());
+        stage.setMinWidth(primaryScreenBounds.getWidth());
+        stage.setMaxWidth(primaryScreenBounds.getWidth());
+
+        stage.setX(0);
+        stage.setY(0);
     }
 
     private int calculateUserSuccesses() {
