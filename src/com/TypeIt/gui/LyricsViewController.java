@@ -55,8 +55,6 @@ import static javafx.stage.Screen.getPrimary;
  * Created by Asaf on 03/01/2017.
  */
 public class LyricsViewController extends AbstractLyricsViewController {
-    private static final int SCORE_WINDOW_WIDTH = 1000;
-    private static final int SCORE_WINDOW_HEIGHT = 200;
     private static final int FONT_SIZE = Constants.DEFAULT_FONT_SIZE*4/3;
     private static final long MILLIS_TO_NORMAL_SPEED = 1000;
     private int whiteSpacesNum = 0;
@@ -73,9 +71,6 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
     @FXML
     private TextArea userTextArea;
-
-//    @FXML
-//    private Button confirmButton;
 
     @FXML
     void initialize() {
@@ -144,6 +139,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
                 while (showing) {
                     List<GuiNote> toRemove = new ArrayList<>();
 
+                    // Before anything is drawn, clear the whole canvas.
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -161,20 +157,12 @@ public class LyricsViewController extends AbstractLyricsViewController {
                             if (note.getY() < -H) {
                                 // Save it and later remove it from the list
                                 toRemove.add(note);
-
-//                                Platform.runLater(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        gc.clearRect(note.getX(), note.getY(), W+1, (H+note.getVelocity()));
-//                                    }
-//                                });
                             }
                             else {
                                 Platform.runLater(new Runnable() {
                                     @Override
                                     public void run() {
                                         note.move();
-//                                        gc.clearRect(note.getX(), note.getY(), W+1, (H+note.getVelocity()));
                                         gc.drawImage(image, note.getX(), note.getY());
                                     }
                                 });
@@ -446,8 +434,11 @@ public class LyricsViewController extends AbstractLyricsViewController {
         }
     }
 
-    private static URL resource = ScoreController.class.getResource("ScoreView.fxml");
-    private Parent scoreView = null;
+    private static BackgroundImage scoreBG = new BackgroundImage(new Image("file:assets/images/background.jpg"),
+            BackgroundRepeat.REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.DEFAULT,
+            BackgroundSize.DEFAULT);
 
     public void createScoreScene() {
         final int successes = calculateUserSuccesses();
@@ -460,38 +451,16 @@ public class LyricsViewController extends AbstractLyricsViewController {
         stage.setTitle("TypeIt - Your score");
 
         songTitle.setVisible(false);
-        songTitle.setFont(Font.font("Courier New", FontWeight.BOLD, 10));
         box.getChildren().remove(songTitle);
-//        box.getChildren().remove(userTextArea);
-//        confirmButton.setVisible(true);
 
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/background.jpg"),
-                BackgroundRepeat.REPEAT,
-                BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.DEFAULT,
-                BackgroundSize.DEFAULT);
 
         box.setAlignment(Pos.TOP_CENTER);
-        box.setBackground(new Background(backgroundImage));
-
-//        scoreLabel.setTextAlignment(TextAlignment.CENTER);
-
-//        confirmButton.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
-//        CustomButton.setCustomStyle(confirmButton);
-//        confirmButton.setFont(FontUtils.getDefaultFont(confirmButton.getFont().getSize()*1.4f));
-//        confirmButton.requestFocus();
-
-//        confirmButton.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent event) {
-//                running = false;
-//
-////                goBackToChooseSong();
-//            }
-//        });
+        box.setBackground(new Background(scoreBG));
 
         refreshScoreLabels(successes, charsNum, percentage);
+//        refreshScoreLabels(successes, charsNum, 100d);
 
+        // Save the score in a different thread
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -526,7 +495,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
     }
 
     protected String createColorString(double percentage) {
-        final double fraction = ((double)percentage/100);
+        final double fraction = (percentage/100);
 
         double r = normalize(1-(fraction/2));
         double g = normalize(fraction);
@@ -542,42 +511,66 @@ public class LyricsViewController extends AbstractLyricsViewController {
         lyricsTextArea.getChildren().clear();
         lyricsTextArea.setMaxWidth(screenBounds.getWidth());
 
-        String colorString = createColorString(percentage);
+       Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                String colorString = createColorString(percentage);
 
-        Font specialFont = FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE*3f);
-        Font regularFont = Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE*3f);
+                Font specialFont = FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE*3f);
+                Font regularFont = Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE*3f);
 
-        // Special characters like ':', '/' or '%' look bad in the custom font.
-        // Write them with the regular font.
-        appendToPane("Your score", "white", specialFont);
-        appendToPane(": ", "white", regularFont);
-        appendToPane(String.valueOf(correctCharacters), colorString, specialFont);
+                // Special characters like ':', '/' or '%' look bad in the custom font.
+                // Write them with the regular font.
+                appendScoreTextToPane("Your score", "white", specialFont);
+                appendScoreTextToPane(": ", "white", regularFont);
+                appendScoreTextToPane(String.valueOf(correctCharacters), colorString, specialFont);
 
-        appendToPane("/","white",regularFont);
-        appendToPane(String.valueOf(charactersInLyrics),"white",specialFont);
-        appendToPane(" (", "white", regularFont);
+                appendScoreTextToPane("/","white",regularFont);
+                appendScoreTextToPane(String.valueOf(charactersInLyrics),"white",specialFont);
+                appendScoreTextToPane(" (", "white", regularFont);
 
-        appendToPane(String.valueOf((int)percentage), colorString, specialFont);
-        appendToPane("%)", "white", regularFont);
-    }
+                appendScoreTextToPane(String.valueOf((int)percentage), colorString, specialFont);
+                appendScoreTextToPane("%)", "white", regularFont);
 
-    private void miserablyTryToFullScreen(Parent scoreView) {
-        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-
-        scoreView.minHeight(primaryScreenBounds.getHeight());
-        scoreView.prefHeight(primaryScreenBounds.getHeight());
-        scoreView.maxHeight(primaryScreenBounds.getHeight());
-        scoreView.minWidth(primaryScreenBounds.getWidth());
-        scoreView.prefWidth(primaryScreenBounds.getWidth());
-        scoreView.maxWidth(primaryScreenBounds.getWidth());
-
-        stage.setMinHeight(primaryScreenBounds.getHeight());
-        stage.setMaxHeight(primaryScreenBounds.getHeight());
-        stage.setMinWidth(primaryScreenBounds.getWidth());
-        stage.setMaxWidth(primaryScreenBounds.getWidth());
-
-        stage.setX(0);
-        stage.setY(0);
+//                // Count up from 0%
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Text num = scoreTexts.get(0);
+//                        Text perc = scoreTexts.get(1);
+//
+//                        double currentPerc = 0;
+//                        int currentNum = 0;
+//
+//                        while (currentPerc < percentage) {
+//                            currentPerc++;
+//
+//                            if (currentPerc >= percentage) {
+//                                currentPerc = percentage;
+//                                currentNum = correctCharacters;
+//                            }
+//                            else {
+//                                currentNum = (int) (((float) currentPerc * charactersInLyrics) / 100f);
+//                            }
+//
+//                            num.setText(String.valueOf(currentNum));
+//                            perc.setText(String.valueOf((int)currentPerc));
+//
+////                            String colorString = createColorString(currentPerc);
+////                            num.setStyle("-fx-fill: " + colorString + "; " + "-fx-stroke: black; -fx-stroke-width: 0.2;");
+////                            perc.setStyle("-fx-fill: " + colorString + "; " + "-fx-stroke: black; -fx-stroke-width: 0.2;");
+//
+//                            try {
+//                                Thread.sleep(15l);
+//                            }
+//                            catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }).start();
+            }
+        });
     }
 
     private int calculateUserSuccesses() {
@@ -673,7 +666,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
         }
     }
 
-    protected void appendToPane(String msg, String color, Font font) {
+    protected void appendScoreTextToPane(String msg, String color, Font font) {
         Text t1 = new Text();
         t1.setStyle("-fx-fill: " + color + "; " + "-fx-stroke: black; -fx-stroke-width: 0.2;");
 
