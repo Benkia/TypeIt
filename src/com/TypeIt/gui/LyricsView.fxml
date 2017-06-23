@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
+<?import javafx.scene.control.Button?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.TypeIt.gui.LyricsViewController">
 <children>
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -22,5 +23,7 @@
 
         <Canvas fx:id="canvas" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
     </StackPane>
+
+    <!--<Button fx:id="confirmButton" text="OK" visible="false"/>-->
 </children>
 </AnchorPane>

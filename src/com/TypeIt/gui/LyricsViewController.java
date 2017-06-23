@@ -3,11 +3,16 @@ package com.TypeIt.gui;
 import com.TypeIt.gui.language.Language;
 import com.TypeIt.main.Constants;
 import com.TypeIt.main.UserDataManager;
+import com.TypeIt.songs.Song;
 import com.TypeIt.songs.melody.Melody;
+import com.TypeIt.sound.BackgroundTrackPlayer;
 import com.TypeIt.sound.MidiBackgroundTrackPlayer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,10 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
@@ -58,6 +60,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
     private static final int FONT_SIZE = Constants.DEFAULT_FONT_SIZE*4/3;
     private static final long MILLIS_TO_NORMAL_SPEED = 1000;
     private int whiteSpacesNum = 0;
+    private Boolean showing = false;
 
     @FXML
     private VBox box;
@@ -70,6 +73,9 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
     @FXML
     private TextArea userTextArea;
+
+//    @FXML
+//    private Button confirmButton;
 
     @FXML
     void initialize() {
@@ -128,13 +134,14 @@ public class LyricsViewController extends AbstractLyricsViewController {
 //        slider.setVisible(false);
 
         running = true;
+        showing = true;
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final GraphicsContext gc = canvas.getGraphicsContext2D();
 
-                while (running) {
+                while (showing) {
                     List<GuiNote> toRemove = new ArrayList<>();
 
                     Platform.runLater(new Runnable() {
@@ -190,24 +197,30 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
     private void onKeyReleased(KeyEvent event) {
         if (event.getCode() == KeyCode.ENTER) {
-            playBackroundTrack();
-            return;
+            if (running) {
+                playBackroundTrack();
+                return;
+            }
+            else {
+                goBackToChooseSong();
+            }
         }
 
-        // Trim to ignore spaces.
-        if (!event.getText().trim().isEmpty()) {
-            // Make sure we haven't finished the song
-            if (syllables.length >= currentSyllableIndex) {
-                char typedChar = event.getText().charAt(0);
+        if (running) {
+            // Trim to ignore spaces.
+            if (!event.getText().trim().isEmpty()) {
+                // Make sure we haven't finished the song
+                if (syllables.length >= currentSyllableIndex) {
+                    char typedChar = event.getText().charAt(0);
 
-                try {
-                    manageKeyTyped(typedChar);
-                }
-                catch (StringIndexOutOfBoundsException e) {}
-                finally {
-                    // Check if we finished the song
-                    if (totalIndex == lyrics.length()) {
-                        done();
+                    try {
+                        manageKeyTyped(typedChar);
+                    } catch (StringIndexOutOfBoundsException e) {
+                    } finally {
+                        // Check if we finished the song
+                        if (totalIndex == lyrics.length()) {
+                            done();
+                        }
                     }
                 }
             }
@@ -439,40 +452,113 @@ public class LyricsViewController extends AbstractLyricsViewController {
     public void createScoreScene() {
         final int successes = calculateUserSuccesses();
         final int charsNum = lyrics.length() - whiteSpacesNum;
-        final float percentage = ((100f*successes) / charsNum);
+        final double percentage = ((100d*successes) / charsNum);
 
         running = false;
-
-        FXMLLoader loader = new FXMLLoader(resource);
-        try {
-            scoreView = loader.load();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // Continue to ScoreController
         stage.setTitle("TypeIt - Your score");
 
-        loader.<ScoreController>getController().setStage(stage);
-        loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
+        songTitle.setVisible(false);
+        songTitle.setFont(Font.font("Courier New", FontWeight.BOLD, 10));
+        box.getChildren().remove(songTitle);
+//        box.getChildren().remove(userTextArea);
+//        confirmButton.setVisible(true);
 
-        miserablyTryToFullScreen(scoreView);
-        stage.setScene(new Scene(scoreView));
-        miserablyTryToFullScreen(scoreView);
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:assets/images/background.jpg"),
+                BackgroundRepeat.REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
 
-//        stage.setFullScreen(true);
-//        stage.setMaximized(true);
+        box.setAlignment(Pos.TOP_CENTER);
+        box.setBackground(new Background(backgroundImage));
 
-//        stage.show();
+//        scoreLabel.setTextAlignment(TextAlignment.CENTER);
+
+//        confirmButton.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
+//        CustomButton.setCustomStyle(confirmButton);
+//        confirmButton.setFont(FontUtils.getDefaultFont(confirmButton.getFont().getSize()*1.4f));
+//        confirmButton.requestFocus();
+
+//        confirmButton.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent event) {
+//                running = false;
+//
+////                goBackToChooseSong();
+//            }
+//        });
+
+        refreshScoreLabels(successes, charsNum, percentage);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
                 // Save the score to the user data file
-                UserDataManager.scored(Constants.fileName, percentage/100);
+                UserDataManager.scored(Constants.fileName, (float) (percentage/100));
             }
         }).start();
+    }
+
+    private void goBackToChooseSong() {
+        showing = false;
+
+        BackgroundTrackPlayer.stopEverything();
+        MidiBackgroundTrackPlayer.stopEverything();
+
+        // Go back to Main menu (Choose song)
+        ObservableList<Song> listOfSongs = FXCollections.observableArrayList(Melody.getListOfAllSongs());
+
+        // Create the first controller
+        ChooseSongController chooseSongController = new ChooseSongController(stage, listOfSongs);
+    }
+
+    private double normalize(double f) {
+        if (f < 0) {
+            return 0;
+        }
+        if (f > 1) {
+            return 1;
+        }
+
+        return f;
+    }
+
+    protected String createColorString(double percentage) {
+        final double fraction = ((double)percentage/100);
+
+        double r = normalize(1-(fraction/2));
+        double g = normalize(fraction);
+
+        Color color = Color.color(r, g, 0);
+        String colorString = color.toString();
+        colorString = colorString.replaceAll("0x", "#");
+
+        return colorString;
+    }
+
+    private void refreshScoreLabels(int correctCharacters, int charactersInLyrics, double percentage) {
+        lyricsTextArea.getChildren().clear();
+        lyricsTextArea.setMaxWidth(screenBounds.getWidth());
+
+        String colorString = createColorString(percentage);
+
+        Font specialFont = FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE*3f);
+        Font regularFont = Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE*3f);
+
+        // Special characters like ':', '/' or '%' look bad in the custom font.
+        // Write them with the regular font.
+        appendToPane("Your score", "white", specialFont);
+        appendToPane(": ", "white", regularFont);
+        appendToPane(String.valueOf(correctCharacters), colorString, specialFont);
+
+        appendToPane("/","white",regularFont);
+        appendToPane(String.valueOf(charactersInLyrics),"white",specialFont);
+        appendToPane(" (", "white", regularFont);
+
+        appendToPane(String.valueOf((int)percentage), colorString, specialFont);
+        appendToPane("%)", "white", regularFont);
     }
 
     private void miserablyTryToFullScreen(Parent scoreView) {
@@ -585,5 +671,18 @@ public class LyricsViewController extends AbstractLyricsViewController {
         synchronized (notes) {
             notes.add(new GuiNote(x, y, velocity, num));
         }
+    }
+
+    protected void appendToPane(String msg, String color, Font font) {
+        Text t1 = new Text();
+        t1.setStyle("-fx-fill: " + color + "; " + "-fx-stroke: black; -fx-stroke-width: 0.2;");
+
+        if (font != null) {
+            t1.setFont(font);
+        }
+
+        t1.setText(msg);
+
+        lyricsTextArea.getChildren().add(t1);
     }
 }
