@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
  * Created by Naveh on 9/1/2017.
  */
 public class ScoreController extends AbstractScoreView {
-    private static final int FONT_SIZE = Constants.DEFAULT_FONT_SIZE*4/3;
+    private static final int FONT_SIZE = (Constants.DEFAULT_FONT_SIZE*4/3) * 2;
 
     private Stage stage;
     private int correctCharacters = 0;
@@ -55,7 +55,7 @@ public class ScoreController extends AbstractScoreView {
                 BackgroundSize.DEFAULT);
 
 //        parentBox.
-        box.setAlignment(Pos.CENTER);
+        box.setAlignment(Pos.TOP_CENTER);
         box.setBackground(new Background(backgroundImage));
 
         scoreLabel.setTextAlignment(TextAlignment.CENTER);
@@ -122,16 +122,16 @@ public class ScoreController extends AbstractScoreView {
 
         // Special characters like ':', '/' or '%' look bad in the custom font.
         // Write them with the regular font.
-        appendToPane("Your score", "black", true);
-        appendToPane(": ", "black", false);
+        appendToPane("Your score", "white", true);
+        appendToPane(": ", "white", false);
         appendToPane(String.valueOf(correctCharacters), colorString, true);
 
-        appendToPane("/","black",false);
-        appendToPane(String.valueOf(charactersInLyrics),"black",true);
-        appendToPane(" (", "black", false);
+        appendToPane("/","white",false);
+        appendToPane(String.valueOf(charactersInLyrics),"white",true);
+        appendToPane(" (", "white", false);
 
         appendToPane(String.valueOf((int)percentage), colorString, true);
-        appendToPane("%)", "black", false);
+        appendToPane("%)", "white", false);
     }
 
     @Override
