@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -451,7 +452,16 @@ public class LyricsViewController extends AbstractLyricsViewController {
         loader.<ScoreController>getController().setStage(stage);
         loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
 
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+
         stage.setScene(new Scene(scoreView));
+
+        scoreView.prefHeight(primaryScreenBounds.getHeight());
+        scoreView.prefWidth(primaryScreenBounds.getWidth());
+
+        stage.setX(primaryScreenBounds.getMinX());
+        stage.setY(primaryScreenBounds.getMinY());
+
         stage.setFullScreen(true);
         stage.setMaximized(true);
         stage.show();

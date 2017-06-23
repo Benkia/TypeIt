@@ -122,16 +122,16 @@ public class ScoreController extends AbstractScoreView {
 
         // Special characters like ':', '/' or '%' look bad in the custom font.
         // Write them with the regular font.
-        appendToPane("Your score", "black", true);
-        appendToPane(": ", "black", false);
+        appendToPane("Your score", "white", true);
+        appendToPane(": ", "white", false);
         appendToPane(String.valueOf(correctCharacters), colorString, true);
 
-        appendToPane("/","black",false);
-        appendToPane(String.valueOf(charactersInLyrics),"black",true);
-        appendToPane(" (", "black", false);
+        appendToPane("/","white",false);
+        appendToPane(String.valueOf(charactersInLyrics),"white",true);
+        appendToPane(" (", "white", false);
 
         appendToPane(String.valueOf((int)percentage), colorString, true);
-        appendToPane("%)", "black", false);
+        appendToPane("%)", "white", false);
     }
 
     @Override
