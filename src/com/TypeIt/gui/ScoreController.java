@@ -59,8 +59,9 @@ public class ScoreController extends AbstractScoreView {
 
         scoreLabel.setTextAlignment(TextAlignment.CENTER);
 
-        confirmButton.setFont(FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE*1.25f));
+        confirmButton.setFont(Font.font("Courier New", FontWeight.BOLD, Constants.DEFAULT_FONT_SIZE));
         CustomButton.setCustomStyle(confirmButton);
+        confirmButton.setFont(FontUtils.getDefaultFont(confirmButton.getFont().getSize()*1.25f));
         confirmButton.requestFocus();
 
         confirmButton.setOnAction(new EventHandler<ActionEvent>() {
