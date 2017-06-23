@@ -41,6 +41,9 @@ public class ScoreController extends AbstractScoreView {
     private VBox box;
 
     @FXML
+    private StackPane parentBox;
+
+    @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         assert scoreLabel != null : "fx:id=\"scoreLabel\" was not injected: check your FXML file 'ScoreView.fxml'.";
@@ -51,7 +54,8 @@ public class ScoreController extends AbstractScoreView {
                 BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
 
-        box.setAlignment(Pos.TOP_CENTER);
+//        parentBox.
+        box.setAlignment(Pos.CENTER);
         box.setBackground(new Background(backgroundImage));
 
         scoreLabel.setTextAlignment(TextAlignment.CENTER);
@@ -118,16 +122,16 @@ public class ScoreController extends AbstractScoreView {
 
         // Special characters like ':', '/' or '%' look bad in the custom font.
         // Write them with the regular font.
-        appendToPane("Your score", "white", true);
-        appendToPane(": ", "white", false);
+        appendToPane("Your score", "black", true);
+        appendToPane(": ", "black", false);
         appendToPane(String.valueOf(correctCharacters), colorString, true);
 
-        appendToPane("/","white",false);
-        appendToPane(String.valueOf(charactersInLyrics),"white",true);
-        appendToPane(" (", "white", false);
+        appendToPane("/","black",false);
+        appendToPane(String.valueOf(charactersInLyrics),"black",true);
+        appendToPane(" (", "black", false);
 
         appendToPane(String.valueOf((int)percentage), colorString, true);
-        appendToPane("%)", "white", false);
+        appendToPane("%)", "black", false);
     }
 
     @Override
