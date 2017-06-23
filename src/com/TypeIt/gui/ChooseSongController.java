@@ -72,6 +72,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
         CheckBox bendPitchCheckBox = new CheckBox("Challenge Mode");
         bendPitchCheckBox.setSelected(PITCH_BEND_DEFAULT);
 
+
         stage.setScene(scene);
         stage.setTitle("Choose a song");
         box.getChildren().addAll(list, label);
@@ -79,7 +80,7 @@ public class ChooseSongController extends AnchorPane implements Initializable {
 
         label.setLayoutX(10);
         label.setLayoutY(115);
-        label.setFont(Font.font("Verdana", Constants.DEFAULT_FONT_SIZE*2/3));
+        label.setFont(FontUtils.getDefaultFont(Constants.DEFAULT_FONT_SIZE*2/3));
 
         list.setItems(data);
         list.getStyleClass().add("custom-align");
@@ -151,12 +152,15 @@ public class ChooseSongController extends AnchorPane implements Initializable {
 
         Image cursor = new Image("file:assets/images/cursor.png");
         stage.getScene().setCursor(new ImageCursor(cursor));
+//        bendPitchCheckBox.setFont(FontUtils.getDefaultFont(bendPitchCheckBox.getFont().getSize()));
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {}
 
     private static class SongDataCell extends ListCell<SongUserData> {
+        private static URL resource =  LyricsViewController.class.getResource("ChooseSongTableCell.fxml");
+
         @Override
         public void updateItem(SongUserData item, boolean empty) {
             super.updateItem(item, empty);
@@ -172,7 +176,8 @@ public class ChooseSongController extends AnchorPane implements Initializable {
         }
 
         private ChooseSongTableCellController createCellController(SongUserData item) {
-            FXMLLoader loader = new FXMLLoader(LyricsViewController.class.getResource("ChooseSongTableCell.fxml"));
+            FXMLLoader loader = new FXMLLoader(resource);
+
             try {
                 loader.load();
             }
