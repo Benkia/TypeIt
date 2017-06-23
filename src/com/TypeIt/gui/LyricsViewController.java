@@ -26,6 +26,8 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -88,29 +90,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         Platform.runLater(() -> {
             this.userTextArea.getScene().setOnKeyReleased(event -> {
-
-                if (event.getCode() == KeyCode.ENTER) {
-                    playBackroundTrack();
-                    return;
-                }
-
-                if (!event.getText().isEmpty()) {
-                    // Make sure we haven't finished the song
-                    if (syllables.length >= currentSyllableIndex) {
-                        char typedChar = event.getText().charAt(0);
-
-                        try {
-                            manageKeyTyped(typedChar);
-                        }
-                        catch (StringIndexOutOfBoundsException e) {}
-                        finally {
-                            // Check if we finished the song
-                            if (totalIndex == lyrics.length()) {
-                                done();
-                            }
-                        }
-                    }
-                }
+                LyricsViewController.this.onKeyReleased(event);
             });
 
             this.refreshScreen();
@@ -155,11 +135,11 @@ public class LyricsViewController extends AbstractLyricsViewController {
                     List<GuiNote> toRemove = new ArrayList<>();
 
                     Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
+                        @Override
+                        public void run() {
                                 gc.clearRect(0, 0, screenBounds.getWidth(), screenBounds.getHeight());
                             }
-                        });
+                    });
 
                     synchronized (notes) {
                         for (GuiNote note : notes) {
@@ -203,6 +183,32 @@ public class LyricsViewController extends AbstractLyricsViewController {
                 }
             }
         }).start();
+    }
+
+    private void onKeyReleased(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            playBackroundTrack();
+            return;
+        }
+
+        // Trim to ignore spaces.
+        if (!event.getText().trim().isEmpty()) {
+            // Make sure we haven't finished the song
+            if (syllables.length >= currentSyllableIndex) {
+                char typedChar = event.getText().charAt(0);
+
+                try {
+                    manageKeyTyped(typedChar);
+                }
+                catch (StringIndexOutOfBoundsException e) {}
+                finally {
+                    // Check if we finished the song
+                    if (totalIndex == lyrics.length()) {
+                        done();
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -441,6 +447,7 @@ public class LyricsViewController extends AbstractLyricsViewController {
 
         // Continue to ScoreController
         stage.setTitle("TypeIt - Your score");
+
         loader.<ScoreController>getController().setStage(stage);
         loader.<ScoreController>getController().setUserPerformanceData(percentage, charsNum);
 
